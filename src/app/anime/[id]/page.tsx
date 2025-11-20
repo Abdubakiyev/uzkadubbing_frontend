@@ -195,6 +195,7 @@ export default function AnimePage() {
             ))}
           </div>
         </div>
+        
       </div>
     </main>
   );
