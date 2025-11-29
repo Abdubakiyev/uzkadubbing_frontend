@@ -1,17 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FiMenu, FiX } from "react-icons/fi";
+import { Anime } from "../features/types/Anime";
+import { getAllAnime } from "../features/api/Anime";
+
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [randomId, setRandomId] = useState<string>("");
 
+  useEffect(() => {
+    const getRandom = async () => {
+      try {
+        // Barcha anime’ni olish
+        const animeList: Anime[] = await getAllAnime();
+
+        if (animeList.length > 0) {
+          const randomIndex = Math.floor(Math.random() * animeList.length);
+          setRandomId(animeList[randomIndex].id);
+        }
+      } catch (err) {
+        console.error("Random ID olishda xato:", err);
+      }
+    };
+
+    getRandom();
+  }, []);
   return (
     <header className="w-full fixed top-0 left-0 z-50 bg-gradient-to-r from-[#8B5E3C]/90 via-[#B8860B]/90 to-[#FFD700]/90 backdrop-blur-md border-b border-white/10 shadow-lg h-[calc(3rem+31px)]">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-3">
-        {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/logos.jpg"
@@ -20,10 +40,8 @@ export default function Header() {
             height={150}
             className="rounded-full border border-white/30 shadow-md"
           />
-          
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link
             href="/"
@@ -32,14 +50,13 @@ export default function Header() {
             Uy
           </Link>
           <Link
-            href="/random"
+            href={randomId ? `/anime/${randomId}` : "#"}
             className="text-white/90 hover:text-yellow-200 font-medium transition"
           >
             Tasodifiy Anime
           </Link>
         </nav>
 
-        {/* Login button (desktop) */}
         <div className="hidden md:block">
           <Link
             href="/register"
@@ -49,7 +66,6 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Hamburger (mobile) */}
         <button
           className="md:hidden text-white text-2xl focus:outline-none"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -58,7 +74,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-gradient-to-b from-[#8B5E3C]/95 via-[#B8860B]/95 to-[#FFD700]/95 backdrop-blur-md border-t border-white/10 px-6 py-4 space-y-4 animate-slideDown">
           <Link
@@ -69,7 +84,7 @@ export default function Header() {
             Uy
           </Link>
           <Link
-            href="/random"
+            href={randomId ? `/anime/${randomId}` : "#"}
             onClick={() => setMenuOpen(false)}
             className="block text-white/90 hover:text-yellow-200 font-medium"
           >

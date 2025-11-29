@@ -1,7 +1,13 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: [
+      'example.com',        // remote rasm hosting
+      'localhost',          // agar local backenddan rasm kelayotgan bo‘lsa
+      '127.0.0.1',          // ba’zida localhost o‘rnida ishlatiladi
+    ],
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

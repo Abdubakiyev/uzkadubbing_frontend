@@ -1,27 +1,94 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { FiEdit2, FiLogOut, FiStar, FiCreditCard } from "react-icons/fi";
+import { FiEdit2, FiLogOut, FiStar } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import MainHeader from "@/src/components/MainHeader";
+import { UserForm } from "@/src/features/types/User";
+import { fetchMyProfile, uploadAvatar, updateUser, fetchUsers } from "@/src/features/api/Users";
+import { fetchPlans } from "@/src/features/api/Subscription-plan";
+import { jwtDecode } from "jwt-decode";
 
 export default function AccountPage() {
-  const [activeTab, setActiveTab] = useState<"tariflar" | "tanlanganlar">(
-    "tariflar"
-  );
+  const [activeTab, setActiveTab] = useState<"tariflar" | "tanlanganlar">("tariflar");
+  const [user, setUser] = useState<UserForm | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [tariffs, setTariffs] = useState<any[]>([]);
 
-  const tariffs = [
-    { id: 1, name: "1 oylik", price: 15000, popular: false },
-    { id: 3, name: "3 oylik", price: 39000, popular: true },
-    { id: 6, name: "6 oylik", price: 66000, popular: false },
-    { id: 12, name: "1 Yillik", price: 110000, popular: false },
-  ];
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      router.push("/register");
+      return;
+    }
+
+    const loadUser = async () => {
+      try {
+        // Misol: barcha foydalanuvchilarni olish
+        const users = await fetchUsers();
+        
+        // Agar faqat hozirgi user kerak bo‘lsa, token sub bilan match qilamiz
+        const token = localStorage.getItem("access_token");
+        if (!token) throw new Error("Token topilmadi");
+    
+        const payload = jwtDecode<{ sub: string }>(token);
+        const currentUser = users.find(u => u.id === payload.sub);
+    
+        if (!currentUser) throw new Error("User topilmadi");
+    
+        console.log("Current user:", currentUser);
+        setUser(currentUser);
+      } catch (err: any) {
+        console.error(err);
+        router.push("/register");
+      }
+    };
+    
+
+    const loadPlans = async () => {
+      try {
+        const plans = await fetchPlans();
+        setTariffs(plans);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    Promise.all([loadUser(), loadPlans()]).finally(() => setLoading(false));
+  }, [router]);
+
+  // ✅ Avatar upload
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !user) return;
+    setAvatarUploading(true);
+
+    try {
+      // 1️⃣ User ID bilan avatarni upload qilamiz
+      const url = await uploadAvatar(user.id, e.target.files[0]);
+
+      // 2️⃣ User object ni yangilaymiz
+      const updatedUser = await updateUser(user.id, { avatar: url });
+      setUser(updatedUser);
+    } catch (err: any) {
+      console.error(err.message || err);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    router.push("/register");
+  };
+
+  if (loading || !user) return <p className="text-center mt-10 text-white">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-black px-6 py-10 text-white">
-      <MainHeader/>
+      <MainHeader />
       <div className="max-w-5xl mx-auto mt-20">
 
         {/* USER PANEL */}
@@ -30,25 +97,31 @@ export default function AccountPage() {
           {/* Avatar */}
           <div className="relative group">
             <div className="w-32 h-32 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center relative overflow-hidden">
-              <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">A</span>
-              </div>
+              {user.avatar ? (
+                <Image src={user.avatar} alt="Avatar" fill className="object-cover rounded-full" />
+              ) : (
+                <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">
+                    {user.username?.[0].toUpperCase() || "A"}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Edit avatar */}
-            <button
-              onClick={() => router.push("/create_profile")}
-              className="absolute bottom-2 right-2 bg-gray-900 p-2 rounded-full shadow-lg border border-gray-700 hover:bg-gray-800 transition-all duration-300 group-hover:scale-110"
+            <label
+              htmlFor="avatar-upload"
+              className="absolute bottom-2 right-2 cursor-pointer bg-gray-900 p-2 rounded-full shadow-lg border border-gray-700 hover:bg-gray-800 transition-all duration-300 group-hover:scale-110"
             >
               <FiEdit2 className="text-orange-500 text-lg" />
-            </button>
+            </label>
+            <input type="file" id="avatar-upload" className="hidden" onChange={handleAvatarChange} />
           </div>
 
           {/* Info */}
           <div className="flex flex-col gap-3 flex-1">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                abdulloh
+                {user.username}
               </h2>
               <FiEdit2
                 onClick={() => router.push("/create_profile")}
@@ -58,7 +131,7 @@ export default function AccountPage() {
 
             <div className="space-y-2">
               <p className="text-gray-300">
-                <span className="font-semibold text-white">ID:</span> 10592870
+                <span className="font-semibold text-white">ID:</span> {user.id}
               </p>
 
               <div className="flex items-center gap-2">
@@ -73,17 +146,11 @@ export default function AccountPage() {
 
           {/* Logout */}
           <button
-            onClick={() => {
-              // LocalStorage-dan token o'chirish
-              localStorage.removeItem("token"); // yoki siz ishlatayotgan key nomi
-              // Register sahifasiga yo'naltirish
-              router.push("/register");
-            }}
+            onClick={handleLogout}
             className="absolute right-8 top-8 text-gray-400 hover:text-orange-500 flex items-center gap-2 transition-all duration-300 hover:bg-gray-800 px-4 py-2 rounded-xl border border-gray-700"
           >
             Chiqish <FiLogOut />
           </button>
-
         </div>
 
         {/* Tabs */}
@@ -91,9 +158,7 @@ export default function AccountPage() {
           <button
             onClick={() => setActiveTab("tariflar")}
             className={`pb-4 font-semibold text-lg relative transition-all duration-300 ${
-              activeTab === "tariflar"
-                ? "text-orange-500"
-                : "text-gray-400 hover:text-gray-300"
+              activeTab === "tariflar" ? "text-orange-500" : "text-gray-400 hover:text-gray-300"
             }`}
           >
             Taríflar
@@ -106,12 +171,12 @@ export default function AccountPage() {
         {/* Tariff Section */}
         {activeTab === "tariflar" && (
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tariffs.map((item) => (
+            {tariffs.map((item: any) => (
               <div
                 key={item.id}
                 className={`bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl p-6 rounded-2xl border flex flex-col gap-6 relative transition-all duration-300 hover:scale-105 hover:from-gray-800 hover:to-gray-700 ${
-                  item.popular 
-                    ? "border-orange-500 ring-2 ring-orange-500 ring-opacity-20" 
+                  item.popular
+                    ? "border-orange-500 ring-2 ring-orange-500 ring-opacity-20"
                     : "border-gray-700"
                 }`}
               >
@@ -123,27 +188,16 @@ export default function AccountPage() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-white">{item.name}</h3>
                   <div className="mt-4">
                     <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                       {item.price.toLocaleString()} so'm
                     </p>
-                    {item.id === 12 && (
-                      <p className="text-green-400 text-sm mt-2 font-semibold">
-                        💰 45% skitka
-                      </p>
-                    )}
-                    {item.id === 6 && (
-                      <p className="text-green-400 text-sm mt-2 font-semibold">
-                        💰 27% skitka
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                {/* Obuna tugmasi */}
                 <a
                   href="https://t.me/kine_one"
                   target="_blank"
@@ -158,8 +212,7 @@ export default function AccountPage() {
                 </a>
 
                 <p className="text-sm text-gray-400 mt-2 text-center">
-                  Obuna olish uchun admin bilan bog‘laning va to‘lov qiling
-                  adminga murojat uchun obuna tugmasini bosing
+                  Obuna olish uchun admin bilan bog‘laning
                 </p>
               </div>
             ))}

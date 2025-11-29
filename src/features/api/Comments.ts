@@ -1,0 +1,78 @@
+import { Comment, CreateCommentDto, UpdateCommentDto } from "../types/Comment";
+
+// 🔹 Backend URLingiz
+const BASE_URL = "http://localhost:3000/comments";
+
+// 🇦🇿 Barcha animega oid commentlarni olish
+export const getCommentsByAnimeId = async (
+    animeId: string,
+    token?: string // token optional qilamiz
+  ): Promise<Comment[]> => {
+    try {
+      const res = await fetch(`${BASE_URL}/anime/${animeId}`, {
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
+      });
+  
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Server javobi:", text);
+        throw new Error("Commentlar olishda xatolik yuz berdi");
+      }
+  
+      const data: Comment[] = await res.json();
+      return data;
+    } catch (error) {
+      console.error("Comments fetch xatosi:", error);
+      throw new Error("Commentlar olishda xatolik yuz berdi");
+    }
+};  
+// 🇦🇿 Comment yaratish
+export const createComment = async (dto: CreateCommentDto, token: string): Promise<Comment> => {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+
+  if (!res.ok) throw new Error("Comment yaratishda xatolik yuz berdi");
+  return res.json();
+};
+
+// 🇦🇿 Comment update qilish (faqat o‘z comment)
+export const updateComment = async (
+  id: string,
+  dto: UpdateCommentDto,
+  token: string
+): Promise<Comment> => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+
+  if (!res.ok) throw new Error("Commentni yangilashda xatolik yuz berdi");
+  return res.json();
+};
+
+// 🇦🇿 Comment o‘chirish (faqat o‘z comment)
+export const deleteComment = async (id: string, token: string): Promise<Comment> => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Commentni o‘chirishda xatolik yuz berdi");
+  return res.json();
+};
