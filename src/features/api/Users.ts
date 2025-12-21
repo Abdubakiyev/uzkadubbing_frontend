@@ -67,7 +67,9 @@ export const fetchUsers = async (): Promise<UserForm[]> => {
 export const createUser = async (body: {
     username?: string | null;
     avatar?: string | null;
+    email?: string | null;
     role: string;
+    password?: string | null;
     isSubscribed?: boolean;
     isVerify?: boolean;
   }): Promise<UserForm> => {
@@ -99,6 +101,7 @@ export const createUser = async (body: {
     id: string,
     body: Partial<{
       username?: string | null;
+      email?: string | null;
       avatar?: string | null;
       role?: string;
       isSubscribed?: boolean;
@@ -168,7 +171,7 @@ export const uploadAvatar = async (userId: string, file: File): Promise<string> 
     return data.url; // serverdan qaytgan avatar URL
 };
   // 7️⃣ ID bo‘yicha userni olish
-export const getUserById = async (id: string): Promise<UserForm> => {
+  export const getUserById = async (id: string): Promise<UserForm> => {
     const token = getToken();
   
     const res = await fetch(`${BASE_URL}/${id}`, {
@@ -178,17 +181,18 @@ export const getUserById = async (id: string): Promise<UserForm> => {
       },
     });
   
-    let data;
-    try { 
-      data = await res.json(); 
-    } catch { 
-      data = null; 
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
     }
   
-    if (!res.ok) {
+    if (!res.ok || !data) {
       throw new Error(data?.message || "Foydalanuvchini olishda xatolik");
     }
   
-    return data;
-  };
+    return data as UserForm; // ✅ TypeScriptga UserForm ekanligini bildiradi
+};
+  
   

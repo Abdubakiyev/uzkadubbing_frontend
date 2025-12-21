@@ -23,6 +23,13 @@ export default function Sidebar() {
         </Link>
 
         <Link
+          href="/uzkadubbing/admin/reklama"
+          className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition"
+        >
+          🎬 Reklama
+        </Link>
+
+        <Link
           href="/uzkadubbing/admin/users"
           className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition"
         >

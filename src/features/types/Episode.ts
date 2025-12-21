@@ -5,5 +5,5 @@ export interface Episode {
     videoUrl: string;
     animeId: string;
     createdAt: string;
-  }
+}
   

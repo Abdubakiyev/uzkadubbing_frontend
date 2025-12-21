@@ -32,18 +32,30 @@ export const getCommentsByAnimeId = async (
 };  
 // 🇦🇿 Comment yaratish
 export const createComment = async (dto: CreateCommentDto, token: string): Promise<Comment> => {
-  const res = await fetch(BASE_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(dto),
-  });
+  try {
+    const res = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(dto),
+    });
 
-  if (!res.ok) throw new Error("Comment yaratishda xatolik yuz berdi");
-  return res.json();
+    const data = await res.json(); // Server javobini olish
+
+    if (!res.ok) {
+      console.error("Server xatosi:", data); // Xatoni log qilamiz
+      throw new Error("Comment yaratishda xatolik yuz berdi: " + JSON.stringify(data));
+    }
+
+    return data;
+  } catch (error) {
+    console.error("createComment xatosi:", error);
+    throw error;
+  }
 };
+
 
 // 🇦🇿 Comment update qilish (faqat o‘z comment)
 export const updateComment = async (
