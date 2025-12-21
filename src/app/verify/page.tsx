@@ -1,7 +1,10 @@
 "use client";
 
 import { verifyAuth, resendCode } from "@/src/features/api/Auth";
-import { useRouter, useSearchParams } from "next/navigation";
+
+import { useSearchParams } from "next/navigation";
+
+import { useRouter} from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { FiMail, FiRefreshCw, FiCheck, FiLock, FiAlertCircle, FiArrowRight } from "react-icons/fi";
 import { FaShieldAlt, FaEnvelopeOpenText } from "react-icons/fa";
