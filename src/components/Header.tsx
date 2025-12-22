@@ -58,13 +58,14 @@ export default function Header() {
               alt="GOMU Logo"
               width={150}
               height={150}
+              unoptimized
               className="relative rounded-full border-2 border-white/40 shadow-lg group-hover:border-white/60 transition duration-300 group-hover:scale-105"
             />
           </div>
           <div className="hidden lg:flex items-center space-x-2">
             <FaCrown className="text-yellow-300 text-xl animate-pulse" />
             <span className="text-white font-bold text-xl tracking-wider bg-gradient-to-r from-white to-yellow-200 bg-clip-text">
-              GOMU ANIME
+              Uzka ANIME
             </span>
           </div>
         </Link>
