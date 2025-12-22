@@ -54,7 +54,7 @@ export default function Header() {
           <div className="relative">
             <div className="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-amber-600 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
             <Image
-              src="/logos.jpg"
+              src="/logos.ico"
               alt="GOMU Logo"
               width={150}
               height={150}
