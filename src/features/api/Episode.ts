@@ -1,6 +1,6 @@
 import { Episode } from "../types/Episode";
 
-const BASE_URL = "http://localhost:3000/episodes";
+const BASE_URL = "https://uzkadubbing.onrender.com/episodes";
 
 // 🇦🇿 Token olish helper
 const getToken = () => localStorage.getItem("access_token");

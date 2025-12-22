@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000/advertisements";
+const API_BASE = "https://uzkadubbing.onrender.com/advertisements";
 
 // =================== GET ALL ===================
 export const getAllAdvertisements = async () => {

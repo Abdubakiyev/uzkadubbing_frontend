@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { UserForm } from "../types/User";
 
-const BASE_URL = "http://localhost:3000/users";
+const BASE_URL = "https://uzkadubbing.onrender.com/users";
 
 // Token payload interface
 interface TokenPayload {

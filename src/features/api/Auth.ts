@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000/auth";
+const BASE_URL = "https://uzkadubbing.onrender.com/auth";
 
 // ⭐ Helper — fetch + JSON
 async function request(url: string, options: RequestInit = {}) {

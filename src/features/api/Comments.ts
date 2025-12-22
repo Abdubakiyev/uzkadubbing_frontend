@@ -1,7 +1,7 @@
 import { Comment, CreateCommentDto, UpdateCommentDto } from "../types/Comment";
 
 // 🔹 Backend URLingiz
-const BASE_URL = "http://localhost:3000/comments";
+const BASE_URL = "https://uzkadubbing.onrender.com/comments";
 
 // 🇦🇿 Barcha animega oid commentlarni olish
 export const getCommentsByAnimeId = async (
