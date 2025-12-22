@@ -247,25 +247,10 @@ const Register: React.FC = () => {
                     <div className="w-full border-t border-white/10"></div>
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-4 bg-gradient-to-b from-gray-900 to-black text-gray-400">
-                      Yoki
-                    </span>
                   </div>
                 </div>
 
                 {/* Login Link */}
-                <div className="text-center">
-                  <p className="text-gray-400">
-                    Allaqachon hisobingiz bormi?{' '}
-                    <button
-                      type="button"
-                      onClick={() => router.push('/login')}
-                      className="text-purple-400 hover:text-purple-300 font-semibold transition-colors"
-                    >
-                      Kirish
-                    </button>
-                  </p>
-                </div>
               </form>
 
               {/* Terms & Privacy */}
