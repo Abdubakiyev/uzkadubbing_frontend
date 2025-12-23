@@ -186,9 +186,6 @@ export default function AdminAdvertisementPage() {
       setUploadProgress(0);
       
       // Mobile uchun avtomatik ro'yxatga o'tish
-      if (window.innerWidth < 1024) {
-        setActiveTab("list");
-      }
     } catch (err: any) {
       console.error("Xato:", err);
       alert(err.message || "❌ Xatolik yuz berdi");
@@ -276,14 +273,6 @@ export default function AdminAdvertisementPage() {
     <div className="bg-gray-800/40 backdrop-blur-lg rounded-xl p-4 border border-gray-700/50 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          {window.innerWidth < 1024 && (
-            <button
-              onClick={() => setActiveTab("list")}
-              className="p-1.5 hover:bg-gray-700/50 rounded-lg"
-            >
-              <ArrowLeft size={18} />
-            </button>
-          )}
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-1.5 rounded-lg">
               {editingAd ? (
@@ -429,12 +418,11 @@ export default function AdminAdvertisementPage() {
             )}
           </button>
 
-          {(editingAd || window.innerWidth < 1024) && (
+          {(editingAd) && (
             <button
               type="button"
               onClick={() => {
                 resetForm();
-                if (window.innerWidth < 1024) setActiveTab("list");
               }}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >

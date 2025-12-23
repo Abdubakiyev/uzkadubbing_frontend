@@ -163,9 +163,6 @@ export default function AdminUsersPage() {
       resetForm();
       
       // Mobile uchun avtomatik ro'yxatga o'tish
-      if (window.innerWidth < 1024) {
-        setActiveTab("list");
-      }
 
     } catch (err: any) {
       console.error(err);
@@ -267,14 +264,6 @@ export default function AdminUsersPage() {
     <div className="bg-gray-800/40 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-lg">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          {window.innerWidth < 1024 && (
-            <button
-              onClick={() => setActiveTab("list")}
-              className="p-2 hover:bg-gray-700/50 rounded-lg"
-            >
-              <ArrowLeft size={20} />
-            </button>
-          )}
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-2 rounded-lg">
               {editingUserId ? (
@@ -454,7 +443,7 @@ export default function AdminUsersPage() {
         </button>
 
         {/* Cancel Button (mobile) */}
-        {window.innerWidth < 1024 && (
+        {(
           <button
             type="button"
             onClick={() => setActiveTab("list")}
