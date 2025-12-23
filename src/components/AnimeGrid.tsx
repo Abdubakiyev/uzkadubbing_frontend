@@ -7,6 +7,8 @@ import { FaEye, FaBookmark, FaFire, FaCrown, FaStar, FaPlay, FaHeart } from "rea
 import { Anime } from "@/src/features/types/Anime";
 import { getAllAnime, increaseAnimeView } from "@/src/features/api/Anime";
 import { MdPaid, MdWhatshot } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { AuthUser } from "../features/types/AuthUser";
 
 
 export default function AnimeGrid() {
@@ -14,6 +16,9 @@ export default function AnimeGrid() {
   const [loading, setLoading] = useState(true);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [user, setUser] = useState<AuthUser | null>(null);
+
 
   useEffect(() => {
     const fetchAnime = async () => {
@@ -32,13 +37,33 @@ export default function AnimeGrid() {
     fetchAnime();
   }, []);
 
-  const handleCardClick = async (animeId: string) => {
+  const handleAnimeClick = async (anime: Anime) => {
     try {
-      await increaseAnimeView(animeId);
+      // Agar anime pullik bo‘lsa
+      if (anime.isPaid) {
+        // Login qilmagan bo‘lsa
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+  
+        // Obuna yo‘q bo‘lsa
+        if (!user.isSubscribed) {
+          router.push("/profile");
+          return;
+        }
+      }
+  
+      // View oshiramiz
+      await increaseAnimeView(anime.id);
+  
+      // Anime sahifaga o‘tamiz
+      router.push(`/anime/${anime.id}`);
     } catch (error) {
-      console.error("View oshirishda xato:", error);
+      console.error("Anime bosilganda xato:", error);
     }
   };
+  
 
   if (loading) {
     return (
@@ -103,7 +128,7 @@ export default function AnimeGrid() {
             <Link
               key={anime.id}
               href={`/anime/${anime.id}`}
-              onClick={() => handleCardClick(anime.id)}
+              onClick={() => handleAnimeClick(anime)}
               onMouseEnter={() => setHoveredCard(anime.id)}
               onMouseLeave={() => setHoveredCard(null)}
               className="relative group"

@@ -8,6 +8,7 @@ import { MdOutlinePaid, MdFreeBreakfast, MdWhatshot } from "react-icons/md";
 import { FaFire, FaCrown, FaGem } from "react-icons/fa";
 import { Anime } from "../features/types/Anime";
 import { getAllAnime, increaseAnimeView } from "../features/api/Anime";
+import { AuthUser } from "../features/types/AuthUser";
 
 export default function HeroSlider() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
@@ -16,6 +17,7 @@ export default function HeroSlider() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const router = useRouter();
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   // 🔹 API orqali animelarni olish
   useEffect(() => {
@@ -64,13 +66,31 @@ export default function HeroSlider() {
     setTimeout(() => setIsAnimating(false), 1000);
   }, [animeList]);
 
-  const handleClick = async (id: string) => {
+  const handleAnimeClick = async (anime: Anime) => {
     try {
-      await increaseAnimeView(id);
-    } catch (e) {
-      console.error("View oshirishda xato:", e);
+      // Agar anime pullik bo‘lsa
+      if (anime.isPaid) {
+        // Login qilmagan bo‘lsa
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+  
+        // Obuna yo‘q bo‘lsa
+        if (!user.isSubscribed) {
+          router.push("/profile");
+          return;
+        }
+      }
+  
+      // View oshiramiz
+      await increaseAnimeView(anime.id);
+  
+      // Anime sahifaga o‘tamiz
+      router.push(`/anime/${anime.id}`);
+    } catch (error) {
+      console.error("Anime bosilganda xato:", error);
     }
-    router.push(`/anime/${id}`);
   };
 
   // Loading state
@@ -137,7 +157,7 @@ export default function HeroSlider() {
               ? "opacity-0 -translate-x-full z-10"
               : "opacity-0 translate-x-full z-10"
           } ${isAnimating ? 'transition-all duration-1000' : ''}`}
-          onClick={() => handleClick(anime.id)}
+          onClick={() => handleAnimeClick(anime)}
         >
           {/* Background Image with Effects */}
           <div className="absolute inset-0 overflow-hidden">
@@ -293,7 +313,7 @@ export default function HeroSlider() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleClick(anime.id);
+                    handleAnimeClick(anime);
                   }}
                   className="group/btn relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-amber-600 hover:from-purple-700 hover:via-pink-700 hover:to-amber-700 text-white font-bold px-10 py-4 rounded-2xl shadow-2xl hover:shadow-purple-500/40 transition-all duration-500 flex items-center space-x-3 transform hover:-translate-y-1 active:scale-95"
                 >
@@ -309,7 +329,7 @@ export default function HeroSlider() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleClick(anime.id);
+                    handleAnimeClick(anime);
                   }}
                   className="group/btn2 bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white font-medium px-6 py-4 rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2"
                 >
