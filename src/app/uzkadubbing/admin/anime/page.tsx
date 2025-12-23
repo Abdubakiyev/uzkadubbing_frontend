@@ -60,7 +60,6 @@ export default function AdminAnimePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [isMobile, setIsMobile] = useState(false);
 
 
   // Slug avtomatik
@@ -92,16 +91,6 @@ export default function AdminAnimePage() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const checkSize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-  
-    checkSize(); // birinchi yuklanganda
-    window.addEventListener("resize", checkSize);
-  
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
   
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,10 +190,6 @@ export default function AdminAnimePage() {
       resetForm();
       setUploadProgress(0);
       
-      // Mobile uchun avtomatik ro'yxatga o'tish
-      if (window.innerWidth < 1024) {
-        setActiveTab("list");
-      }
     } catch (err: any) {
       console.error("Saqlash xatosi:", err);
       alert(err.message || "❌ Xatolik yuz berdi!");
@@ -301,15 +286,6 @@ export default function AdminAnimePage() {
     <div className="bg-gray-800/40 backdrop-blur-lg rounded-xl p-4 border border-gray-700/50 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-        {isMobile && (
-          <button
-            onClick={() => setActiveTab("list")}
-            className="p-1.5 hover:bg-gray-700/50 rounded-lg"
-          >
-            <ArrowLeft size={18} />
-          </button>
-        )}
-
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-1.5 rounded-lg">
               {editingAnime ? (
@@ -516,12 +492,11 @@ export default function AdminAnimePage() {
             )}
           </button>
 
-          {(editingAnime || isMobile) && (
+          {(editingAnime) && (
             <button
               type="button"
               onClick={() => {
                 resetForm();
-                if (isMobile) setActiveTab("list");
               }}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
