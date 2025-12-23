@@ -36,7 +36,7 @@ export default function Sidebar() {
     { href: "/uzkadubbing/admin/users", label: "Foydalanuvchilar", icon: Users, color: "text-pink-400" },
     { href: "/uzkadubbing/admin/subscription-plans", label: "Obuna Rejalari", icon: CreditCard, color: "text-cyan-400" },
     { href: "/uzkadubbing/admin/user-subscription", label: "Foydalanuvchi Obunalari", icon: Package, color: "text-orange-400" },
-    { href: "/uzkadubbing/admin/todo", label: "TODO List", icon: BarChart3, color: "text-red-400" },
+    { href: "/uzkadubbing/admin", label: "TODO List", icon: BarChart3, color: "text-red-400" },
   ];
 
   // Check if mobile
@@ -198,7 +198,7 @@ export default function Sidebar() {
           {/* Additional Links */}
           <div className="space-y-1">
             <Link
-              href="/uzkadubbing/admin/settings"
+              href="/uzkadubbing/admin"
               className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -209,7 +209,7 @@ export default function Sidebar() {
             </Link>
 
             <Link
-              href="/uzkadubbing/admin/support"
+              href="/uzkadubbing/admin"
               className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -220,7 +220,7 @@ export default function Sidebar() {
             </Link>
 
             <Link
-              href="/uzkadubbing/admin/analytics"
+              href="/uzkadubbing/admin"
               className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >

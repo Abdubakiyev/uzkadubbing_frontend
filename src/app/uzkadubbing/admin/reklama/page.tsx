@@ -693,7 +693,7 @@ export default function AdminAdvertisementPage() {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       <Sidebar />
 
-      <div className="flex-1 p-4 sm:p-6">
+      <div className="flex-1 p-4 sm:p-6 pl-20">
         <div className="max-w-7xl mx-auto">
           {/* HEADER */}
           <div className="mb-4 sm:mb-6">
