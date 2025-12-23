@@ -9,6 +9,7 @@ import { FaFire, FaCrown, FaGem } from "react-icons/fa";
 import { Anime } from "../features/types/Anime";
 import { getAllAnime, increaseAnimeView } from "../features/api/Anime";
 import { UserForm } from "../features/types/User";
+import { getUserById } from "../features/api/Users";
 
 export default function HeroSlider() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
@@ -66,9 +67,24 @@ export default function HeroSlider() {
     setTimeout(() => setIsAnimating(false), 1000);
   }, [animeList]);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = localStorage.getItem("user_id"); // localStorage dan id olish
+        if (userId) {
+          const userData = await getUserById(userId); // backenddan user ma'lumotini olish
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("User fetch xatosi:", error);
+      }
+    };
+  
+    fetchUser();
+  }, []);
+  
   const handleAnimeClick = async (anime: Anime) => {
     try {
-      // Agar anime pullik bo‘lsa
       if (anime.isPaid) {
         // Login qilmagan bo‘lsa
         if (!user) {
@@ -91,7 +107,8 @@ export default function HeroSlider() {
     } catch (error) {
       console.error("Anime bosilganda xato:", error);
     }
-  };
+  };  
+  
 
   // Loading state
   if (isLoading) {

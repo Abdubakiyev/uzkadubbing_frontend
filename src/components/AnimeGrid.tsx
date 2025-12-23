@@ -53,37 +53,32 @@ export default function AnimeGrid() {
   
     fetchUser();
   }, []);
-
+  
   const handleAnimeClick = async (anime: Anime) => {
     try {
-      let currentUser = user;
-      
-      if (!currentUser) {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-          currentUser = await getUserById(userId);
-          setUser(currentUser);
-        }
-      }
-  
       if (anime.isPaid) {
-        if (!currentUser) {
+        // Login qilmagan bo‘lsa
+        if (!user) {
           router.push("/register");
           return;
         }
-        if (!currentUser.isSubscribed) {
+  
+        // Obuna yo‘q bo‘lsa
+        if (!user.isSubscribed) {
           router.push("/profile");
           return;
         }
       }
   
+      // View oshiramiz
       await increaseAnimeView(anime.id);
+  
+      // Anime sahifaga o‘tamiz
       router.push(`/anime/${anime.id}`);
     } catch (error) {
       console.error("Anime bosilganda xato:", error);
     }
-  };
-  
+  };  
   
 
   if (loading) {
