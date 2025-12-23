@@ -72,7 +72,7 @@ export default function HeroSlider() {
       if (anime.isPaid) {
         // Login qilmagan bo‘lsa
         if (!user) {
-          router.push("/login");
+          router.push("/register");
           return;
         }
   
