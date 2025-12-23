@@ -8,7 +8,7 @@ import { MdOutlinePaid, MdFreeBreakfast, MdWhatshot } from "react-icons/md";
 import { FaFire, FaCrown, FaGem } from "react-icons/fa";
 import { Anime } from "../features/types/Anime";
 import { getAllAnime, increaseAnimeView } from "../features/api/Anime";
-import { AuthUser } from "../features/types/AuthUser";
+import { UserForm } from "../features/types/User";
 
 export default function HeroSlider() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
@@ -17,7 +17,7 @@ export default function HeroSlider() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<UserForm | null>(null);
 
   // 🔹 API orqali animelarni olish
   useEffect(() => {

@@ -8,7 +8,7 @@ import { Anime } from "@/src/features/types/Anime";
 import { getAllAnime, increaseAnimeView } from "@/src/features/api/Anime";
 import { MdPaid, MdWhatshot } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { AuthUser } from "../features/types/AuthUser";
+import { UserForm } from "../features/types/User";
 
 
 export default function AnimeGrid() {
@@ -17,7 +17,7 @@ export default function AnimeGrid() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<UserForm | null>(null);
 
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function AnimeGrid() {
           router.push("/register");
           return;
         }
-        console.log("USER:", user);
+       
   
         // Obuna yo‘q bo‘lsa
         if (!user.isSubscribed) {
@@ -54,6 +54,7 @@ export default function AnimeGrid() {
           return;
         }
       }
+      console.log(user);
   
       // View oshiramiz
       await increaseAnimeView(anime.id);
