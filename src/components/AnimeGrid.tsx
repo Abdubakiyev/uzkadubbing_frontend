@@ -43,9 +43,10 @@ export default function AnimeGrid() {
       if (anime.isPaid) {
         // Login qilmagan bo‘lsa
         if (!user) {
-          router.push("/login");
+          router.push("/register");
           return;
         }
+        console.log("USER:", user);
   
         // Obuna yo‘q bo‘lsa
         if (!user.isSubscribed) {
