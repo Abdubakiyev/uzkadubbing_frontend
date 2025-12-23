@@ -14,15 +14,20 @@ export default function SearchPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const allAnime = await getAllAnime();
-      const filtered = allAnime.filter((anime) =>
-        anime.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
+      try {
+        const allAnime = await getAllAnime();
+        const filtered = allAnime.filter((anime) =>
+          anime.title.toLowerCase().includes(query.toLowerCase())
+        );
+        setResults(filtered);
+      } catch (err) {
+        console.error("Search xatosi:", err);
+      }
     };
-
+  
     fetchData();
   }, [query]);
+  
 
   return (
     <div className="max-w-7xl mx-auto px-6 pt-32">
