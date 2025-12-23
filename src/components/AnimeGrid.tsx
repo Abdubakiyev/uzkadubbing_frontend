@@ -58,11 +58,12 @@ export default function AnimeGrid() {
     try {
       // Agar anime pullik bo‘lsa
       if (anime.isPaid) {
-        // Login qilmagan bo‘lsa
         if (!user) {
           router.push("/register");
           return;
         }
+
+        console.log(anime.isPaid)
        
   
         // Obuna yo‘q bo‘lsa
