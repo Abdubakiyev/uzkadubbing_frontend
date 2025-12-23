@@ -234,18 +234,15 @@ export default function Sidebar() {
 
         {/* Footer - Logout */}
         <div className="p-4 border-t border-gray-700/50">
-          <button
+          <Link
+            href="/"
             className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 w-full transition-colors"
-            onClick={() => {
-              // Logout logic here
-              alert("Chiqish qilish");
-            }}
           >
             <div className="p-2 rounded-lg bg-red-500/20">
               <LogOut size={18} />
             </div>
             <span className="font-medium">Chiqish</span>
-          </button>
+          </Link>
           
           {/* Version info - Desktop only */}
           <div className="hidden md:block mt-4 text-center">
