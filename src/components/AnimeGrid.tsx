@@ -19,6 +19,8 @@ export default function AnimeGrid() {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [user, setUser] = useState<UserForm | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
 
   useEffect(() => {
@@ -79,6 +81,11 @@ export default function AnimeGrid() {
       console.error("Anime bosilganda xato:", error);
     }
   };  
+
+  const filteredAnime = animeList.filter(anime =>
+    anime.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   
 
   if (loading) {
@@ -133,6 +140,17 @@ export default function AnimeGrid() {
               <div className="text-gray-400 text-sm">Jami Ko'rishlar</div>
             </div>
           </div>
+        </div>
+
+        {/* Search Input */}
+        <div className="mb-8 text-center">
+          <input
+            type="text"
+            placeholder="Anime nomi bo‘yicha qidirish..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
         </div>
 
         {/* Anime Grid */}
@@ -298,13 +316,18 @@ export default function AnimeGrid() {
         </div>
 
         {/* Empty State */}
-        {animeList.length === 0 && !loading && (
-          <div className="text-center py-20">
+        {filteredAnime.length > 0 ? (
+          filteredAnime.map((anime, index) => (
+            // Bu yerda sizning anime kartalari map ichida bo‘ladi
+            <div key={anime.id}>...</div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-20 text-gray-400">
             <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-500/10 to-amber-500/10 rounded-full flex items-center justify-center mb-6">
               <FaPlay className="text-gray-400 text-3xl" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-300 mb-2">Hech qanday anime topilmadi</h3>
-            <p className="text-gray-500">Kechirasiz, hozircha anime mavjud emas.</p>
+            <h3 className="text-2xl font-bold mb-2">Hech qanday anime topilmadi</h3>
+            <p>Kechirasiz, hozircha anime mavjud emas.</p>
           </div>
         )}
       </div>
