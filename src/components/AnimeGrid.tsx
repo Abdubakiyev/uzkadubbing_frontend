@@ -9,6 +9,7 @@ import { getAllAnime, increaseAnimeView } from "@/src/features/api/Anime";
 import { MdPaid, MdWhatshot } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { UserForm } from "../features/types/User";
+import { getUserById } from "@/src/features/api/Users"; // backenddan user olish funksiyasi
 
 
 export default function AnimeGrid() {
@@ -35,6 +36,22 @@ export default function AnimeGrid() {
     };
 
     fetchAnime();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = localStorage.getItem("userId"); // localStorage dan id olish
+        if (userId) {
+          const userData = await getUserById(userId); // backenddan user ma'lumotini olish
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("User fetch xatosi:", error);
+      }
+    };
+  
+    fetchUser();
   }, []);
 
   const handleAnimeClick = async (anime: Anime) => {

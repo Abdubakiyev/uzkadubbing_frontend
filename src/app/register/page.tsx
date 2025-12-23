@@ -29,18 +29,15 @@ const Register: React.FC = () => {
 
       // 🚀 Backendga register request
       const result = await registerApi(email, password);
-      console.log("Backend javobi:", result);
 
       // 🔹 USER ID va TOKEN saqlash
       if (result.userId) {
         localStorage.setItem("user_id", result.userId);
-        console.log("User ID localStoragega saqlandi ✅", result.userId);
       }
 
       if (result.tokens) {
         localStorage.setItem("access_token", result.tokens.accessToken);
         localStorage.setItem("refresh_token", result.tokens.refreshToken);
-        console.log("Tokens localStoragega saqlandi ✅");
       }
 
       // 🔹 Redirect backenddan kelgan redirectTo ga
