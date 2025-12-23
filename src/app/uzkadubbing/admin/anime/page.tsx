@@ -575,6 +575,7 @@ export default function AdminAnimePage() {
           </div>
           {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
+        
 
         {showFilters && (
           <div className="p-3 bg-gray-700/30 rounded-lg">
