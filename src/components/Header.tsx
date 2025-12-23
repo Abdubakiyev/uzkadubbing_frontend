@@ -7,11 +7,14 @@ import { FiMenu, FiX, FiHome, FiShuffle, FiLogIn } from "react-icons/fi";
 import { FaCrown } from "react-icons/fa";
 import { Anime } from "../features/types/Anime";
 import { getAllAnime } from "../features/api/Anime";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [randomId, setRandomId] = useState<string>("");
   const [scrolled, setScrolled] = useState(false);
+  const [search, setSearch] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const getRandom = async () => {
@@ -36,6 +39,12 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSearch = () => {
+    if (!search.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(search)}`);
+    setSearch("");
+  };
 
   return (
     <header 
@@ -93,6 +102,25 @@ export default function Header() {
           </Link>
         </nav>
 
+               {/* SEARCH */}
+       <div className="relative hidden lg:block">
+         <input
+           type="text"
+           value={search}
+           onChange={(e) => setSearch(e.target.value)}
+           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+           placeholder="Anime qidirish..."
+           className="w-64 pl-4 pr-10 py-2 rounded-xl bg-white/15 text-white placeholder-white/70 outline-none border border-white/20 focus:border-yellow-300 focus:bg-white/20 transition"
+         />
+         <button
+           onClick={handleSearch}
+           className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-yellow-300 transition"
+         >
+           🔍
+         </button>
+       </div>
+
+
         {/* Desktop Kirish tugmasi */}
         <div className="hidden md:block">
           <Link
@@ -142,6 +170,32 @@ export default function Header() {
             </div>
             <span className="text-lg">Tasodifiy Anime</span>
           </Link>
+
+          <div className="relative">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                  setMenuOpen(false);
+                }
+              }}
+              placeholder="Anime qidirish..."
+              className="w-full pl-4 pr-10 py-3 rounded-xl bg-white/15 text-white placeholder-white/70 outline-none border border-white/20 focus:border-yellow-300 transition"
+            />
+            <button
+              onClick={() => {
+                handleSearch();
+                setMenuOpen(false);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white"
+            >
+              🔍
+            </button>
+          </div>
+
           
           <Link
             href="/register"
