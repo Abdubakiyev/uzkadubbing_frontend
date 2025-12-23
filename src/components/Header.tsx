@@ -40,11 +40,7 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleSearch = () => {
-    if (!search.trim()) return;
-    router.push(`/search?q=${encodeURIComponent(search)}`);
-    setSearch("");
-  };
+
 
   return (
     <header 
@@ -102,24 +98,6 @@ export default function Header() {
           </Link>
         </nav>
 
-               {/* SEARCH */}
-       <div className="relative hidden lg:block">
-         <input
-           type="text"
-           value={search}
-           onChange={(e) => setSearch(e.target.value)}
-           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-           placeholder="Anime qidirish..."
-           className="w-64 pl-4 pr-10 py-2 rounded-xl bg-white/15 text-white placeholder-white/70 outline-none border border-white/20 focus:border-yellow-300 focus:bg-white/20 transition"
-         />
-         <button
-           onClick={handleSearch}
-           className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-yellow-300 transition"
-         >
-           🔍
-         </button>
-       </div>
-
 
         {/* Desktop Kirish tugmasi */}
         <div className="hidden md:block">
@@ -169,34 +147,7 @@ export default function Header() {
               <FiShuffle className="text-xl" />
             </div>
             <span className="text-lg">Tasodifiy Anime</span>
-          </Link>
-
-          <div className="relative">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                  setMenuOpen(false);
-                }
-              }}
-              placeholder="Anime qidirish..."
-              className="w-full pl-4 pr-10 py-3 rounded-xl bg-white/15 text-white placeholder-white/70 outline-none border border-white/20 focus:border-yellow-300 transition"
-            />
-            <button
-              onClick={() => {
-                handleSearch();
-                setMenuOpen(false);
-              }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white"
-            >
-              🔍
-            </button>
-          </div>
-
-          
+          </Link>          
           <Link
             href="/register"
             onClick={() => setMenuOpen(false)}

@@ -41,7 +41,7 @@ export default function AnimeGrid() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userId = localStorage.getItem("userId"); // localStorage dan id olish
+        const userId = localStorage.getItem("user_id"); // localStorage dan id olish
         if (userId) {
           const userData = await getUserById(userId); // backenddan user ma'lumotini olish
           setUser(userData);
