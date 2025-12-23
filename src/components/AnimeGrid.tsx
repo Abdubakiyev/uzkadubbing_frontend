@@ -62,8 +62,6 @@ export default function AnimeGrid() {
           router.push("/register");
           return;
         }
-
-        console.log(anime.isPaid)
        
   
         // Obuna yo‘q bo‘lsa
@@ -73,6 +71,7 @@ export default function AnimeGrid() {
         }
       }
       console.log(user);
+      console.log(anime.isPaid)
   
       // View oshiramiz
       await increaseAnimeView(anime.id);
@@ -145,14 +144,14 @@ export default function AnimeGrid() {
           className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         >
           {animeList.map((anime, index) => (
-            <Link
-              key={anime.id}
-              href={`/anime/${anime.id}`}
-              onClick={() => handleAnimeClick(anime)}
-              onMouseEnter={() => setHoveredCard(anime.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-              className="relative group"
-            >
+            <div
+            key={anime.id}
+            onClick={() => handleAnimeClick(anime)}
+            onMouseEnter={() => setHoveredCard(anime.id)}
+            onMouseLeave={() => setHoveredCard(null)}
+            className="relative group cursor-pointer"
+          >
+          
               {/* Card Container */}
               <div className="relative rounded-2xl overflow-hidden transition-all duration-500 group-hover:scale-[1.05] group-hover:shadow-2xl group-hover:shadow-purple-500/20">
                 {/* Gradient Border Effect */}
@@ -297,7 +296,7 @@ export default function AnimeGrid() {
                   </>
                 )}
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
