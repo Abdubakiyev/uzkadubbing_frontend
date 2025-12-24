@@ -1,70 +1,66 @@
+import { Advertisement, CreateAdvertisementDto, UpdateAdvertisementDto } from "../types/Reklama";
+
 const API_BASE = "https://uzkadubbing.onrender.com/advertisements";
 
+// =================== TYPES ===================
+
 // =================== GET ALL ===================
-export const getAllAdvertisements = async () => {
-    const token = localStorage.getItem("access_token"); // token olamiz
-    const res = await fetch(API_BASE, {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : {},
-    });
-  
-    if (!res.ok) throw new Error("Failed to fetch advertisements");
-    return res.json();
+export const getAllAdvertisements = async (token?: string): Promise<Advertisement[]> => {
+  const res = await fetch(API_BASE, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Failed to fetch advertisements");
+  }
+
+  return res.json();
 };
 
 // =================== GET ONE ===================
-export const getAdvertisementById = async (id: string) => {
-  const res = await fetch(`${API_BASE}/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch advertisement");
+export const getAdvertisementById = async (id: string, token?: string): Promise<Advertisement> => {
+  const res = await fetch(`${API_BASE}/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || "Failed to fetch advertisement");
+  }
+
   return res.json();
 };
 
 // =================== CREATE ===================
-export type CreateAdvertisementDto = {
-  text?: string;
-  link?: string;
-  video?: string;
-};
-
 export const createAdvertisement = async (
-    dto: CreateAdvertisementDto,
-    token: string,
-  ) => {
-    const res = await fetch(`${API_BASE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(dto),
-    });
-  
-    const data = await res.json();
-  
-    // 🔥 HAQIQIY XATONI KO‘RSATADI
-    if (!res.ok) {
-      console.error("Backend error:", data);
-      throw new Error(data.message || "Failed to create advertisement");
-    }
-  
-    return data;
-  };
-  
-// =================== UPDATE ===================
-export type UpdateAdvertisementDto = {
-  text?: string;
-  link?: string;
-  video?: string;
+  dto: CreateAdvertisementDto,
+  token: string
+): Promise<Advertisement> => {
+  const res = await fetch(`${API_BASE}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("Backend error:", data);
+    throw new Error(data.message || "Failed to create advertisement");
+  }
+
+  return data;
 };
 
+// =================== UPDATE ===================
 export const updateAdvertisement = async (
   id: string,
   dto: UpdateAdvertisementDto,
   token: string
-) => {
+): Promise<Advertisement> => {
   const res = await fetch(`${API_BASE}/${id}`, {
     method: "PATCH",
     headers: {
@@ -73,24 +69,36 @@ export const updateAdvertisement = async (
     },
     body: JSON.stringify(dto),
   });
-  if (!res.ok) throw new Error("Failed to update advertisement");
-  return res.json();
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("Backend error:", data);
+    throw new Error(data.message || "Failed to update advertisement");
+  }
+
+  return data;
 };
 
 // =================== DELETE ===================
-export const deleteAdvertisement = async (id: string, token: string) => {
+export const deleteAdvertisement = async (id: string, token: string): Promise<Advertisement> => {
   const res = await fetch(`${API_BASE}/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  if (!res.ok) throw new Error("Failed to delete advertisement");
-  return res.json();
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("Backend error:", data);
+    throw new Error(data.message || "Failed to delete advertisement");
+  }
+
+  return data;
 };
 
 // =================== UPLOAD VIDEO ===================
-export const uploadAdvertisementVideo = async (file: File, token: string) => {
+export const uploadAdvertisementVideo = async (file: File, token: string): Promise<{ url: string }> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -102,6 +110,11 @@ export const uploadAdvertisementVideo = async (file: File, token: string) => {
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to upload video");
-  return res.json(); // { url: "http://..." }
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("Backend error:", data);
+    throw new Error(data.message || "Failed to upload video");
+  }
+
+  return data; // { url: "http://..." }
 };

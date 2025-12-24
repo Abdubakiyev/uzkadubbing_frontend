@@ -24,7 +24,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Play
+  Play,
+  Tag
 } from "lucide-react";
 
 import {
@@ -33,9 +34,8 @@ import {
   deleteAdvertisement,
   getAllAdvertisements,
   uploadAdvertisementVideo,
-  CreateAdvertisementDto,
 } from "@/src/features/api/Reklama";
-import { Advertisement } from "@/src/features/types/Reklama";
+import { Advertisement, CreateAdvertisementDto } from "@/src/features/types/Reklama";
 
 export default function AdminAdvertisementPage() {
   const [ads, setAds] = useState<any[]>([]);
@@ -63,13 +63,13 @@ export default function AdminAdvertisementPage() {
   useEffect(() => {
     const t = localStorage.getItem("access_token") || "";
     setToken(t);
-    loadAds();
+    loadAds(t);
   }, []);
 
-  const loadAds = async () => {
+  const loadAds = async (t: string) => {
     try {
       setLoading(true);
-      const data = await getAllAdvertisements();
+      const data = await getAllAdvertisements(t);
       setAds(data);
     } catch (e) {
       console.error("Fetch xato:", e);
@@ -91,7 +91,7 @@ export default function AdminAdvertisementPage() {
     }
 
     // Video type validation
-    if (!file.type.startsWith('video/')) {
+    if (!file.type.startsWith("video/")) {
       alert("⚠️ Faqat video fayllari qabul qilinadi!");
       return;
     }
@@ -103,25 +103,23 @@ export default function AdminAdvertisementPage() {
   // Clear video preview
   const clearVideo = () => {
     setVideoFile(null);
-    setVideoPreview("");
     if (videoPreview) URL.revokeObjectURL(videoPreview);
+    setVideoPreview("");
   };
 
   // edit boshlash
-  const startEdit = (ad: any) => {
+  const startEdit = (ad: Advertisement) => {
     setEditingAd(ad);
     setText(ad.text || "");
     setLink(ad.link || "");
     setVideoPreview(ad.video || "");
     setVideoFile(null);
-    setActiveTab("form");
   };
 
   // create + update
-  const createAd = async (e: React.FormEvent) => {
+  const submitAd = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
+
     if (!text.trim() && !link.trim() && !videoFile && !videoPreview) {
       alert("⚠️ Iltimos, kamida bitta maydoni to'ldiring!");
       return;
@@ -140,9 +138,8 @@ export default function AdminAdvertisementPage() {
 
       // video yuklash
       if (videoFile) {
-        // Simulate upload progress
         const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
+          setUploadProgress((prev) => {
             if (prev >= 90) {
               clearInterval(progressInterval);
               return 90;
@@ -166,26 +163,20 @@ export default function AdminAdvertisementPage() {
       if (videoUrl) dto.video = videoUrl;
 
       let savedAd: Advertisement;
-
       if (editingAd) {
-        // ✏️ UPDATE
         savedAd = await updateAdvertisement(editingAd.id, dto, token);
         setAds((prev) =>
           prev.map((a) => (a.id === editingAd.id ? savedAd : a))
         );
         alert("✅ Reklama yangilandi!");
       } else {
-        // ➕ CREATE
         savedAd = await createAdvertisement(dto, token);
         setAds((prev) => [savedAd, ...prev]);
         alert("✅ Reklama qo'shildi!");
       }
 
-      // reset
       resetForm();
       setUploadProgress(0);
-      
-      // Mobile uchun avtomatik ro'yxatga o'tish
     } catch (err: any) {
       console.error("Xato:", err);
       alert(err.message || "❌ Xatolik yuz berdi");
@@ -195,9 +186,8 @@ export default function AdminAdvertisementPage() {
   };
 
   // delete
-  const deleteAd = async (id: string) => {
+  const deleteAdById = async (id: string) => {
     if (!token) return alert("⚠️ Token yo'q");
-
     if (!confirm("⚠️ Rostdan o'chirmoqchimisiz?")) return;
 
     try {
@@ -219,16 +209,16 @@ export default function AdminAdvertisementPage() {
   };
 
   // Filtered ads
-  const filteredAds = ads.filter(ad => {
-    const matchesSearch = 
+  const filteredAds = ads.filter((ad) => {
+    const matchesSearch =
       ad.text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ad.link?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesVideoFilter = 
+
+    const matchesVideoFilter =
       hasVideoFilter === "ALL" ||
       (hasVideoFilter === "WITH_VIDEO" && ad.video) ||
       (hasVideoFilter === "WITHOUT_VIDEO" && !ad.video);
-    
+
     return matchesSearch && matchesVideoFilter;
   });
 
@@ -301,7 +291,22 @@ export default function AdminAdvertisementPage() {
         )}
       </div>
 
-      <form onSubmit={createAd} className="space-y-4">
+      <form onSubmit={submitAd} className="space-y-4">
+  {/* Title */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
+            <Tag size={14} />
+            Reklama sarlavhasi (ixtiyoriy)
+          </label>
+          <input
+            type="text"
+            placeholder="Reklama sarlavhasi..."
+            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+        </div>
+
         {/* Matn */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -336,7 +341,7 @@ export default function AdminAdvertisementPage() {
             <Video size={14} />
             Video (ixtiyoriy)
           </label>
-          
+
           {videoPreview ? (
             <div className="flex flex-col gap-2">
               <div className="relative">
@@ -391,14 +396,14 @@ export default function AdminAdvertisementPage() {
             </div>
           )}
         </div>
-
+        
         {/* Status message */}
         <div className="p-2 bg-gray-700/30 rounded-lg">
           <p className="text-xs text-gray-400 text-center">
             Kamida bitta maydonni to'ldirishingiz kerak
           </p>
         </div>
-
+        
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
@@ -417,13 +422,11 @@ export default function AdminAdvertisementPage() {
               "➕ Qo'shish"
             )}
           </button>
-
-          {(editingAd) && (
+          
+          {editingAd && (
             <button
               type="button"
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -431,6 +434,7 @@ export default function AdminAdvertisementPage() {
           )}
         </div>
       </form>
+
     </div>
   );
 
@@ -451,12 +455,13 @@ export default function AdminAdvertisementPage() {
           </div>
         </div>
         <button
-          onClick={loadAds}
+          onClick={() => void loadAds(text)} // void bilan Promise ni tozalash
           className="p-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg"
           title="Yangilash"
         >
           <RefreshCw size={18} />
         </button>
+
       </div>
 
       {/* Search and Filters */}
@@ -624,7 +629,7 @@ export default function AdminAdvertisementPage() {
                   </button>
 
                   <button
-                    onClick={() => deleteAd(ad.id)}
+                    onClick={() => deleteAdById(ad.id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 py-1.5 rounded text-xs"
                   >
                     <Trash2 size={12} />
