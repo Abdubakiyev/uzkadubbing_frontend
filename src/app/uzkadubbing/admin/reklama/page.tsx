@@ -62,15 +62,19 @@ export default function AdminAdvertisementPage() {
 
   // auth
   const [token, setToken] = useState("");
+  
 
   // edit
   const [editingAd, setEditingAd] = useState<any | null>(null);
 
   // token faqat browserda
   useEffect(() => {
-    const t = localStorage.getItem("access_token") || "";
+   // to'g'ri
+    const t: string = localStorage.getItem("access_token") || "";
     setToken(t);
-    loadAds();
+
+    setToken(t);
+    if (t) loadAds(t); 
   }, []);
 
   useEffect(() => {
@@ -86,10 +90,10 @@ export default function AdminAdvertisementPage() {
     loadAnimes();
   }, []);
 
-  const loadAds = async () => {
+  const loadAds = async (token: string) => {
     try {
       setLoading(true);
-      const data = await getAllAdvertisements();
+      const data = await getAllAdvertisements(token);
       setAds(data);
     } catch (e) {
       console.error("Fetch xato:", e);
@@ -507,7 +511,10 @@ export default function AdminAdvertisementPage() {
           </div>
         </div>
         <button
-          onClick={loadAds}
+          onClick={() => {
+            if (token) loadAds(token);
+            else alert("Token mavjud emas!");
+          }}
           className="p-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg"
           title="Yangilash"
         >
