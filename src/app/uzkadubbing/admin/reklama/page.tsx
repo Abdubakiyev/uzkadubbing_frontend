@@ -37,6 +37,8 @@ import {
 import { Advertisement, CreateAdvertisementDto } from "@/src/features/types/Reklama";
 import { getAllEpisodes } from "@/src/features/api/Episode";
 import { Episode } from "@/src/features/types/Episode";
+import { Anime } from "@/src/features/types/Anime";
+import { getAllAnime } from "@/src/features/api/Anime";
 
 export default function AdminAdvertisementPage() {
   const [ads, setAds] = useState<any[]>([]);
@@ -45,6 +47,8 @@ export default function AdminAdvertisementPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState<"list" | "form">("list");
   const [searchTerm, setSearchTerm] = useState("");
+  const [animes, setAnimes] = useState<Anime[]>([]);
+  const [selectedAnimeId, setSelectedAnimeId] = useState<string>("");
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
@@ -69,6 +73,19 @@ export default function AdminAdvertisementPage() {
     loadAds();
   }, []);
 
+  useEffect(() => {
+    const loadAnimes = async () => {
+      try {
+        const data = await getAllAnime(); // sizning API sorovingiz
+        setAnimes(data);
+      } catch (e) {
+        console.error(e);
+        alert("Anime larni yuklashda xato!");
+      }
+    };
+    loadAnimes();
+  }, []);
+
   const loadAds = async () => {
     try {
       setLoading(true);
@@ -81,14 +98,25 @@ export default function AdminAdvertisementPage() {
       setLoading(false);
     }
   };
-  const loadEpisodes = async () => {
-    try {
-      const data = await getAllEpisodes(); // Episode API dan array
-      setEpisodes(data);
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    if (!selectedAnimeId) {
+      setEpisodes([]);
+      setSelectedEpisodeId("");
+      return;
     }
-  };
+  
+    const loadEpisodes = async () => {
+      try {
+        const data = await getAllEpisodes(selectedAnimeId); // API sorov, animeId bo‘yicha
+        setEpisodes(data);
+      } catch (e) {
+        console.error(e);
+        alert("Episode larni yuklashda xato!");
+      }
+    };
+  
+    loadEpisodes();
+  }, [selectedAnimeId]);
 
   // video tanlash
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -319,6 +347,24 @@ export default function AdminAdvertisementPage() {
           />
         </div>
 
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
+            <Film size={14} />
+            Anime tanlang
+          </label>
+          <select
+            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            value={selectedAnimeId}
+            onChange={(e) => setSelectedAnimeId(e.target.value)}
+            required
+          >
+            <option value="">-- Anime tanlang --</option>
+            {animes.map(a => (
+              <option key={a.id} value={a.id}>{a.title}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Episode tanlash */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -330,12 +376,11 @@ export default function AdminAdvertisementPage() {
             value={selectedEpisodeId}
             onChange={(e) => setSelectedEpisodeId(e.target.value)}
             required
+            disabled={!selectedAnimeId}
           >
             <option value="">-- Episode tanlang --</option>
             {episodes.map(ep => (
-              <option key={ep.id} value={ep.id}>
-                {ep.title}
-              </option>
+              <option key={ep.id} value={ep.id}>{ep.title}</option>
             ))}
           </select>
         </div>
