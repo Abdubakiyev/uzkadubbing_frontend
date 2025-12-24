@@ -792,7 +792,13 @@ export default function AdminAnimePage() {
 
           {/* Mobile Layout */}
           <div className="lg:hidden">
-            {activeTab === "form" ? <FormSection /> : <ListSection />}
+            <div className={activeTab === "form" ? "block" : "hidden"}>
+              <FormSection />
+            </div>
+
+            <div className={activeTab === "list" ? "block" : "hidden"}>
+              <ListSection />
+            </div>
           </div>
         </div>
       </div>

@@ -88,7 +88,7 @@ export default function MainHeader() {
     <header 
       className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-gradient-to-r from-[#8B5E3C] via-[#B8860B] to-[#FFD700] shadow-2xl shadow-yellow-900/30" 
+          ? "bg-gradient-to-r from-[#cbae75] shadow-2xl shadow-yellow-900/30" 
           : "bg-gradient-to-r from-[#8B5E3C]/95 via-[#B8860B]/95 to-[#FFD700]/95"
       } backdrop-blur-md border-b border-white/20 h-[calc(3rem+31px)]`}
     >
