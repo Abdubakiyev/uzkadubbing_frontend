@@ -24,8 +24,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Play,
-  Tag
+  Play
 } from "lucide-react";
 
 import {
@@ -36,6 +35,8 @@ import {
   uploadAdvertisementVideo,
 } from "@/src/features/api/Reklama";
 import { Advertisement, CreateAdvertisementDto } from "@/src/features/types/Reklama";
+import { getAllEpisodes } from "@/src/features/api/Episode";
+import { Episode } from "@/src/features/types/Episode";
 
 export default function AdminAdvertisementPage() {
   const [ads, setAds] = useState<any[]>([]);
@@ -44,6 +45,8 @@ export default function AdminAdvertisementPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState<"list" | "form">("list");
   const [searchTerm, setSearchTerm] = useState("");
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
   const [hasVideoFilter, setHasVideoFilter] = useState<"ALL" | "WITH_VIDEO" | "WITHOUT_VIDEO">("ALL");
 
@@ -63,19 +66,27 @@ export default function AdminAdvertisementPage() {
   useEffect(() => {
     const t = localStorage.getItem("access_token") || "";
     setToken(t);
-    loadAds(t);
+    loadAds();
   }, []);
 
-  const loadAds = async (t: string) => {
+  const loadAds = async () => {
     try {
       setLoading(true);
-      const data = await getAllAdvertisements(t);
+      const data = await getAllAdvertisements();
       setAds(data);
     } catch (e) {
       console.error("Fetch xato:", e);
       alert("❌ Reklamalarni yuklashda xatolik!");
     } finally {
       setLoading(false);
+    }
+  };
+  const loadEpisodes = async () => {
+    try {
+      const data = await getAllEpisodes(); // Episode API dan array
+      setEpisodes(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -91,7 +102,7 @@ export default function AdminAdvertisementPage() {
     }
 
     // Video type validation
-    if (!file.type.startsWith("video/")) {
+    if (!file.type.startsWith('video/')) {
       alert("⚠️ Faqat video fayllari qabul qilinadi!");
       return;
     }
@@ -103,49 +114,42 @@ export default function AdminAdvertisementPage() {
   // Clear video preview
   const clearVideo = () => {
     setVideoFile(null);
-    if (videoPreview) URL.revokeObjectURL(videoPreview);
     setVideoPreview("");
+    if (videoPreview) URL.revokeObjectURL(videoPreview);
   };
 
   // edit boshlash
-  const startEdit = (ad: Advertisement) => {
+  const startEdit = (ad: any) => {
     setEditingAd(ad);
     setText(ad.text || "");
     setLink(ad.link || "");
     setVideoPreview(ad.video || "");
+    setSelectedEpisodeId(ad.episodeId || "")
     setVideoFile(null);
+    setActiveTab("form");
   };
 
   // create + update
-  const submitAd = async (e: React.FormEvent) => {
+  const createAd = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!selectedEpisodeId) {
+      return alert("Iltimos, episode tanlang!");
+    }
     if (!text.trim() && !link.trim() && !videoFile && !videoPreview) {
-      alert("⚠️ Iltimos, kamida bitta maydoni to'ldiring!");
-      return;
+      return alert("Kamida bitta maydon to‘ldirilishi kerak!");
     }
-
-    if (!token) {
-      alert("⚠️ Token yo'q, qayta login qiling");
-      return;
-    }
+    if (!token) return alert("Token yo‘q");
 
     setIsSubmitting(true);
     setUploadProgress(0);
 
     try {
-      let videoUrl = editingAd?.video || "";
+      let videoUrl = "";
 
-      // video yuklash
       if (videoFile) {
         const progressInterval = setInterval(() => {
-          setUploadProgress((prev) => {
-            if (prev >= 90) {
-              clearInterval(progressInterval);
-              return 90;
-            }
-            return prev + 10;
-          });
+          setUploadProgress(prev => Math.min(prev + 10, 90));
         }, 100);
 
         try {
@@ -157,37 +161,32 @@ export default function AdminAdvertisementPage() {
         }
       }
 
-      const dto: CreateAdvertisementDto = {};
-      if (text.trim()) dto.text = text.trim();
-      if (link.trim()) dto.link = link.trim();
-      if (videoUrl) dto.video = videoUrl;
+      const dto: CreateAdvertisementDto = {
+        episodeId: selectedEpisodeId,
+        text: text.trim() || undefined,
+        link: link.trim() || undefined,
+        video: videoUrl || undefined,
+      };
 
-      let savedAd: Advertisement;
-      if (editingAd) {
-        savedAd = await updateAdvertisement(editingAd.id, dto, token);
-        setAds((prev) =>
-          prev.map((a) => (a.id === editingAd.id ? savedAd : a))
-        );
-        alert("✅ Reklama yangilandi!");
-      } else {
-        savedAd = await createAdvertisement(dto, token);
-        setAds((prev) => [savedAd, ...prev]);
-        alert("✅ Reklama qo'shildi!");
-      }
-
+      const savedAd = await createAdvertisement(dto, token);
+      setAds(prev => [savedAd, ...prev]);
+      alert("✅ Reklama qo‘shildi!");
       resetForm();
       setUploadProgress(0);
+
     } catch (err: any) {
-      console.error("Xato:", err);
-      alert(err.message || "❌ Xatolik yuz berdi");
+      console.error(err);
+      alert(err.message || "❌ Xato yuz berdi");
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   // delete
-  const deleteAdById = async (id: string) => {
+  const deleteAd = async (id: string) => {
     if (!token) return alert("⚠️ Token yo'q");
+
     if (!confirm("⚠️ Rostdan o'chirmoqchimisiz?")) return;
 
     try {
@@ -209,16 +208,16 @@ export default function AdminAdvertisementPage() {
   };
 
   // Filtered ads
-  const filteredAds = ads.filter((ad) => {
-    const matchesSearch =
+  const filteredAds = ads.filter(ad => {
+    const matchesSearch = 
       ad.text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ad.link?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesVideoFilter =
+    
+    const matchesVideoFilter = 
       hasVideoFilter === "ALL" ||
       (hasVideoFilter === "WITH_VIDEO" && ad.video) ||
       (hasVideoFilter === "WITHOUT_VIDEO" && !ad.video);
-
+    
     return matchesSearch && matchesVideoFilter;
   });
 
@@ -291,22 +290,7 @@ export default function AdminAdvertisementPage() {
         )}
       </div>
 
-      <form onSubmit={submitAd} className="space-y-4">
-  {/* Title */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
-            <Tag size={14} />
-            Reklama sarlavhasi (ixtiyoriy)
-          </label>
-          <input
-            type="text"
-            placeholder="Reklama sarlavhasi..."
-            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </div>
-
+      <form onSubmit={createAd} className="space-y-4">
         {/* Matn */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -335,13 +319,35 @@ export default function AdminAdvertisementPage() {
           />
         </div>
 
+        {/* Episode tanlash */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
+            <Film size={14} />
+            Episode tanlang
+          </label>
+          <select
+            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            value={selectedEpisodeId}
+            onChange={(e) => setSelectedEpisodeId(e.target.value)}
+            required
+          >
+            <option value="">-- Episode tanlang --</option>
+            {episodes.map(ep => (
+              <option key={ep.id} value={ep.id}>
+                {ep.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+
         {/* Video Upload */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
             <Video size={14} />
             Video (ixtiyoriy)
           </label>
-
+          
           {videoPreview ? (
             <div className="flex flex-col gap-2">
               <div className="relative">
@@ -396,14 +402,14 @@ export default function AdminAdvertisementPage() {
             </div>
           )}
         </div>
-        
+
         {/* Status message */}
         <div className="p-2 bg-gray-700/30 rounded-lg">
           <p className="text-xs text-gray-400 text-center">
             Kamida bitta maydonni to'ldirishingiz kerak
           </p>
         </div>
-        
+
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
@@ -422,11 +428,13 @@ export default function AdminAdvertisementPage() {
               "➕ Qo'shish"
             )}
           </button>
-          
-          {editingAd && (
+
+          {(editingAd) && (
             <button
               type="button"
-              onClick={resetForm}
+              onClick={() => {
+                resetForm();
+              }}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -434,7 +442,6 @@ export default function AdminAdvertisementPage() {
           )}
         </div>
       </form>
-
     </div>
   );
 
@@ -455,13 +462,12 @@ export default function AdminAdvertisementPage() {
           </div>
         </div>
         <button
-          onClick={() => void loadAds(text)} // void bilan Promise ni tozalash
+          onClick={loadAds}
           className="p-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg"
           title="Yangilash"
         >
           <RefreshCw size={18} />
         </button>
-
       </div>
 
       {/* Search and Filters */}
@@ -629,7 +635,7 @@ export default function AdminAdvertisementPage() {
                   </button>
 
                   <button
-                    onClick={() => deleteAdById(ad.id)}
+                    onClick={() => deleteAd(ad.id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 py-1.5 rounded text-xs"
                   >
                     <Trash2 size={12} />
