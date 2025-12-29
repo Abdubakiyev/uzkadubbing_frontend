@@ -101,10 +101,10 @@ export default function AdminEpisodePage() {
   };
 
   // 🔹 CREATE / UPDATE
-  const saveEpisode = async (e: React.FormEvent) => {
+  const saveEpisode = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Validation
+  
+    // 🔹 Validation
     if (!title.trim()) {
       alert("⚠️ Episode nomini kiriting!");
       return;
@@ -121,24 +121,19 @@ export default function AdminEpisodePage() {
       alert("⚠️ Video faylni tanlang!");
       return;
     }
-
+  
     setIsSubmitting(true);
     setUploadProgress(0);
-
+  
     try {
       let videoUrl = editingEpisode?.videoUrl || "";
+  
       if (videoFile) {
-        // Simulate upload progress
+        // 🔹 Upload progress simulation
         const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
-            if (prev >= 90) {
-              clearInterval(progressInterval);
-              return 90;
-            }
-            return prev + 10;
-          });
+          setUploadProgress((prev) => (prev < 90 ? prev + 10 : prev));
         }, 100);
-
+  
         try {
           videoUrl = await uploadEpisodeVideo(videoFile);
         } finally {
@@ -146,41 +141,40 @@ export default function AdminEpisodePage() {
           setUploadProgress(100);
         }
       }
-
-      const dto = { 
-        title: title.trim(), 
-        episodeNumber: Number(episodeNumber), 
-        animeId, 
-        videoUrl 
+  
+      const dto = {
+        title: title.trim(),
+        episodeNumber: Number(episodeNumber),
+        animeId,
+        videoUrl,
       };
-      
+  
       let savedEpisode: Episode;
-
+  
       if (editingEpisode) {
-        // Update
+        // 🔹 Update
         savedEpisode = await updateEpisodeApi(editingEpisode.id, dto);
         setEpisodes((prev) =>
           prev.map((e) => (e.id === savedEpisode.id ? savedEpisode : e))
         );
         alert("✅ Episode yangilandi!");
       } else {
-        // Create
+        // 🔹 Create
         savedEpisode = await createEpisodeApi(dto);
         setEpisodes((prev) => [savedEpisode, ...prev]);
         alert("✅ Episode qo'shildi!");
       }
-
+  
       resetForm();
       setUploadProgress(0);
-      
-      // Mobile uchun avtomatik ro'yxatga o'tish
+  
     } catch (err: any) {
+      console.error("Episode saqlash xatosi:", err);
       alert(err.message || "❌ Xatolik yuz berdi!");
-      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };  
 
   const startEdit = (episode: Episode) => {
     setEditingEpisode(episode);
@@ -301,10 +295,15 @@ export default function AdminEpisodePage() {
         )}
       </div>
 
-      <form onSubmit={saveEpisode} className="space-y-4">
+      <form
+        onSubmit={saveEpisode}
+        className="space-y-4"
+      >
         {/* Episode nomi */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Episode nomi</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Episode nomi
+          </label>
           <input
             type="text"
             placeholder="Masalan: Qahramonlar jangi"
@@ -314,10 +313,12 @@ export default function AdminEpisodePage() {
             required
           />
         </div>
-
+            
         {/* Episode raqami */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Episode raqami</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Episode raqami
+          </label>
           <div className="relative">
             <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
             <input
@@ -331,10 +332,12 @@ export default function AdminEpisodePage() {
             />
           </div>
         </div>
-
+            
         {/* Anime tanlash */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Anime tanlash</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Anime tanlash
+          </label>
           <select
             value={animeId}
             onChange={(e) => setAnimeId(e.target.value)}
@@ -349,10 +352,12 @@ export default function AdminEpisodePage() {
             ))}
           </select>
         </div>
-
+          
         {/* Video yuklash */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Video yuklash</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Video yuklash
+          </label>
           
           {videoPreview ? (
             <div className="flex flex-col gap-2">
@@ -391,7 +396,7 @@ export default function AdminEpisodePage() {
               </div>
             </label>
           )}
-
+      
           {/* Upload progress */}
           {uploadProgress > 0 && (
             <div className="mt-2">
@@ -408,7 +413,7 @@ export default function AdminEpisodePage() {
             </div>
           )}
         </div>
-
+        
         {/* Selected anime info */}
         {animeId && (
           <div className="p-2 bg-gray-700/30 rounded-lg">
@@ -417,7 +422,7 @@ export default function AdminEpisodePage() {
             </p>
           </div>
         )}
-
+      
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
@@ -436,13 +441,11 @@ export default function AdminEpisodePage() {
               "➕ Qo'shish"
             )}
           </button>
-
-          {(editingEpisode) && (
+          
+          {editingEpisode && (
             <button
               type="button"
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -450,6 +453,7 @@ export default function AdminEpisodePage() {
           )}
         </div>
       </form>
+
     </div>
   );
 

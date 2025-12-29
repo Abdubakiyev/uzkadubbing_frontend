@@ -10,6 +10,7 @@ import { MdPaid, MdWhatshot } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { UserForm } from "../features/types/User";
 import { getUserById } from "@/src/features/api/Users"; // backenddan user olish funksiyasi
+import { FiPlay } from "react-icons/fi";
 
 
 export default function AnimeGrid() {
@@ -90,15 +91,17 @@ export default function AnimeGrid() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-transparent border-t-purple-500 border-r-amber-500 border-b-pink-500 rounded-full animate-spin mb-4"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <FaPlay className="text-white text-xl animate-pulse" />
+      <div className="relative w-full h-[75vh] mt-16 flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-purple-900/20">
+        <div className="relative">
+          <div className="w-20 h-20 border-[3px] border-transparent border-t-purple-500 border-r-amber-500 border-b-pink-500 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-amber-600 rounded-full flex items-center justify-center animate-pulse">
+              <FiPlay className="text-white text-xl" />
             </div>
           </div>
-          <p className="text-gray-300 text-lg mt-4 animate-pulse">Anime yuklanmoqda...</p>
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/70 text-sm animate-pulse">
+            Yuklanmoqda...
+          </div>
         </div>
       </div>
     );

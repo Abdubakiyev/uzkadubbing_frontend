@@ -165,7 +165,7 @@ export default function AnimePage() {
             </div>
           </div>
           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/70 text-sm animate-pulse">
-            Anime Yuklanmoqda...
+            Yuklanmoqda...
           </div>
         </div>
       </div>

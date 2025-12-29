@@ -162,28 +162,32 @@ export default function AdminAdvertisementPage() {
   };
 
   // create + update
-  const createAd = async (e: React.FormEvent) => {
+  const createAd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
+    // Validation
     if (!selectedEpisodeId) {
-      return alert("Iltimos, episode tanlang!");
+      return alert("⚠️ Iltimos, episode tanlang!");
     }
     if (!text.trim() && !link.trim() && !videoFile && !videoPreview) {
-      return alert("Kamida bitta maydon to‘ldirilishi kerak!");
+      return alert("⚠️ Kamida bitta maydon to‘ldirilishi kerak!");
     }
-    if (!token) return alert("Token yo‘q");
-
+    if (!token) {
+      return alert("❌ Token mavjud emas!");
+    }
+  
     setIsSubmitting(true);
     setUploadProgress(0);
-
+  
     try {
       let videoUrl = "";
-
+  
       if (videoFile) {
+        // Simulate upload progress
         const progressInterval = setInterval(() => {
           setUploadProgress(prev => Math.min(prev + 10, 90));
         }, 100);
-
+  
         try {
           const uploaded = await uploadAdvertisementVideo(videoFile, token);
           videoUrl = uploaded.url;
@@ -192,27 +196,28 @@ export default function AdminAdvertisementPage() {
           setUploadProgress(100);
         }
       }
-
+  
       const dto: CreateAdvertisementDto = {
         episodeId: selectedEpisodeId,
         text: text.trim() || undefined,
         link: link.trim() || undefined,
         video: videoUrl || undefined,
       };
-
+  
       const savedAd = await createAdvertisement(dto, token);
       setAds(prev => [savedAd, ...prev]);
+  
       alert("✅ Reklama qo‘shildi!");
       resetForm();
       setUploadProgress(0);
-
+  
     } catch (err: any) {
-      console.error(err);
-      alert(err.message || "❌ Xato yuz berdi");
+      console.error("Reklama yaratishda xato:", err);
+      alert(err.message || "❌ Xato yuz berdi!");
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };  
   
 
   // delete
@@ -351,6 +356,7 @@ export default function AdminAdvertisementPage() {
           />
         </div>
 
+        {/* Anime tanlash */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
             <Film size={14} />
@@ -368,7 +374,7 @@ export default function AdminAdvertisementPage() {
             ))}
           </select>
         </div>
-
+          
         {/* Episode tanlash */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -388,8 +394,7 @@ export default function AdminAdvertisementPage() {
             ))}
           </select>
         </div>
-
-
+          
         {/* Video Upload */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -451,14 +456,14 @@ export default function AdminAdvertisementPage() {
             </div>
           )}
         </div>
-
+        
         {/* Status message */}
         <div className="p-2 bg-gray-700/30 rounded-lg">
           <p className="text-xs text-gray-400 text-center">
             Kamida bitta maydonni to'ldirishingiz kerak
           </p>
         </div>
-
+        
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
@@ -477,13 +482,11 @@ export default function AdminAdvertisementPage() {
               "➕ Qo'shish"
             )}
           </button>
-
-          {(editingAd) && (
+          
+          {editingAd && (
             <button
               type="button"
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -491,6 +494,7 @@ export default function AdminAdvertisementPage() {
           )}
         </div>
       </form>
+
     </div>
   );
 

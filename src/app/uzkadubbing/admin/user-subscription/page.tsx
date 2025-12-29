@@ -96,18 +96,20 @@ export default function UserSubscriptionAdminPage() {
   };
 
   /* ================= CREATE / UPDATE ================= */
-  const handleSaveSubscription = async (e: React.FormEvent) => {
+  const handleSaveSubscription = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
+    // Validation
     if (!userId || !planId) {
       alert("⚠️ Iltimos, foydalanuvchi va reja tanlang!");
       return;
     }
-    
+  
     setIsSubmitting(true);
-
+  
     try {
       let savedSub: UserSubscription;
-
+  
       if (editingSubscription) {
         // UPDATE
         savedSub = await updateSubscription(editingSubscription.id, { userId, planId });
@@ -121,10 +123,10 @@ export default function UserSubscriptionAdminPage() {
         setSubscriptions(prev => [savedSub, ...prev]);
         alert("✅ Yangi obuna qo'shildi!");
       }
-
+  
+      // Formni tozalash
       resetForm();
-      
-
+  
     } catch (err: any) {
       console.error("Save error:", err);
       alert(err.message || "❌ Server xatosi!");
@@ -132,6 +134,7 @@ export default function UserSubscriptionAdminPage() {
       setIsSubmitting(false);
     }
   };
+  
 
   /* ================= DELETE ================= */
   const handleDeleteSubscription = async (id: string) => {
@@ -284,7 +287,7 @@ export default function UserSubscriptionAdminPage() {
             </p>
           )}
         </div>
-
+        
         {/* Reja tanlash */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Obuna rejasi</label>
@@ -301,6 +304,7 @@ export default function UserSubscriptionAdminPage() {
               </option>
             ))}
           </select>
+          
           {planId && (
             <div className="mt-2 p-2 bg-gray-700/30 rounded text-sm">
               {(() => {
@@ -317,7 +321,7 @@ export default function UserSubscriptionAdminPage() {
             </div>
           )}
         </div>
-
+        
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
@@ -336,13 +340,11 @@ export default function UserSubscriptionAdminPage() {
               "➕ Qo'shish"
             )}
           </button>
-
-          {(editingSubscription) && (
+          
+          {editingSubscription && (
             <button
               type="button"
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -350,6 +352,7 @@ export default function UserSubscriptionAdminPage() {
           )}
         </div>
       </form>
+
     </div>
   );
 

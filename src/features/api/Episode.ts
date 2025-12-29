@@ -102,7 +102,7 @@ export const updateEpisodeApi = async (
   const token = getToken();
 
   const res = await fetch(`${BASE_URL}/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,

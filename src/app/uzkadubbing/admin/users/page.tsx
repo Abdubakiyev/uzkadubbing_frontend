@@ -101,28 +101,28 @@ export default function AdminUsersPage() {
   };
 
   // CREATE or UPDATE USER
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+  
     // Validation
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
       alert("⚠️ Iltimos, to'g'ri email kiriting!");
       return;
     }
-    
+  
     if (!username.trim()) {
       alert("⚠️ Username kiriting!");
       return;
     }
-    
-    if (!editingUserId && !password) {
+  
+    if (!editingUserId && !password.trim()) {
       alert("⚠️ Parol kiriting!");
       return;
     }
-
+  
     setIsSubmitting(true);
-
-    let avatarUrl: string | null = null;
+  
+    let avatarUrl: string | undefined;
     if (avatarFile) {
       try {
         avatarUrl = await uploadAvatar("temp", avatarFile);
@@ -132,18 +132,18 @@ export default function AdminUsersPage() {
         return;
       }
     }
-
+  
     try {
       if (editingUserId) {
         // UPDATE USER
-        const updated = await updateUser(editingUserId, {
+        const updatedUser = await updateUser(editingUserId, {
           username: username.trim(),
           email: email.trim(),
           role,
-          avatar: avatarUrl || undefined
+          avatar: avatarUrl || undefined,
         });
         setUsers((prev) =>
-          prev.map((u) => (u.id === editingUserId ? updated : u))
+          prev.map((u) => (u.id === editingUserId ? updatedUser : u))
         );
         alert("✅ Foydalanuvchi yangilandi!");
       } else {
@@ -153,24 +153,20 @@ export default function AdminUsersPage() {
           email: email.trim(),
           password: password.trim(),
           role,
-          avatar: avatarUrl
+          avatar: avatarUrl,
         });
         setUsers((prev) => [newUser, ...prev]);
         alert("✅ Foydalanuvchi muvaffaqiyatli qo'shildi!");
       }
-
-      // Reset form
+  
       resetForm();
-      
-      // Mobile uchun avtomatik ro'yxatga o'tish
-
     } catch (err: any) {
       console.error(err);
       alert(err.message || "❌ Server xatosi!");
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };  
 
   // DELETE USER
   const handleDeleteUser = async (id: string) => {
@@ -325,7 +321,7 @@ export default function AdminUsersPage() {
           />
         </div>
 
-        {/* Password (only for creating new user) */}
+        {/* Password */}
         {!editingUserId && (
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -383,14 +379,14 @@ export default function AdminUsersPage() {
             </button>
           </div>
         </div>
-
+            
         {/* Avatar Upload */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
             <Upload size={16} />
             Profil rasmi
           </label>
-          
+            
           {avatarPreview ? (
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
@@ -423,7 +419,7 @@ export default function AdminUsersPage() {
             </label>
           )}
         </div>
-
+        
         {/* Submit Button */}
         <button
           type="submit"
@@ -441,18 +437,17 @@ export default function AdminUsersPage() {
             "➕ Qo'shish"
           )}
         </button>
-
-        {/* Cancel Button (mobile) */}
-        {(
-          <button
-            type="button"
-            onClick={() => setActiveTab("list")}
-            className="w-full bg-gray-700/50 hover:bg-gray-700 py-2.5 rounded-lg text-sm"
-          >
-            Bekor qilish
-          </button>
-        )}
+        
+        {/* Cancel Button */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("list")}
+          className="w-full bg-gray-700/50 hover:bg-gray-700 py-2.5 rounded-lg text-sm"
+        >
+          Bekor qilish
+        </button>
       </form>
+
     </div>
   );
 

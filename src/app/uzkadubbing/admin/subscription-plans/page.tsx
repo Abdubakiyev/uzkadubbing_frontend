@@ -88,35 +88,39 @@ export default function AdminSubscriptionPlansPage() {
   };
 
   /* ================= SAVE (CREATE / UPDATE) ================= */
-  const savePlan = async (e: React.FormEvent) => {
+  const savePlan = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+  
     // Validation
     if (!name.trim()) {
       alert("⚠️ Reja nomini kiriting!");
       return;
     }
-    if (!price || price < 0) {
+  
+    const numericPrice = Number(price);
+    const numericDuration = Number(duration);
+  
+    if (isNaN(numericPrice) || numericPrice < 0) {
       alert("⚠️ To'g'ri narx kiriting!");
       return;
     }
-    if (!duration || duration < 1) {
+    if (isNaN(numericDuration) || numericDuration < 1) {
       alert("⚠️ Muddatni kiriting (kamida 1 kun)!");
       return;
     }
-
+  
     setIsSubmitting(true);
-
+  
     try {
       const dto = {
         name: name.trim(),
-        price: Number(price),
-        duration: Number(duration),
+        price: numericPrice,
+        duration: numericDuration,
         isActive,
       };
-
+  
       let savedPlan: SubscriptionPlan;
-
+  
       if (editingPlan) {
         // UPDATE
         savedPlan = await updatePlan(editingPlan.id, dto);
@@ -130,17 +134,16 @@ export default function AdminSubscriptionPlansPage() {
         setPlans((prev) => [savedPlan, ...prev]);
         alert("✅ Yangi reja qo'shildi!");
       }
-
+  
       resetForm();
-      
-      // Mobile uchun avtomatik ro'yxatga o'tish
     } catch (err: any) {
-      console.error(err);
+      console.error("Reja saqlash xatosi:", err);
       alert(err.message || "❌ Xatolik yuz berdi!");
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   /* ================= DELETE ================= */
   const handleDelete = async (id: string) => {
@@ -287,15 +290,13 @@ export default function AdminSubscriptionPlansPage() {
         <div className="p-3 bg-gray-700/30 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {isActive ? (
-                <div className="bg-green-500/20 p-1 rounded">
+              <div className={`p-1 rounded ${isActive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                {isActive ? (
                   <Check className="text-green-400" size={16} />
-                </div>
-              ) : (
-                <div className="bg-red-500/20 p-1 rounded">
+                ) : (
                   <XCircle className="text-red-400" size={16} />
-                </div>
-              )}
+                )}
+              </div>
               <div>
                 <p className="font-medium text-sm">Status</p>
                 <p className="text-xs text-gray-400">
@@ -318,7 +319,7 @@ export default function AdminSubscriptionPlansPage() {
             </button>
           </div>
         </div>
-
+              
         {/* Kunlik narx */}
         {price && duration && (
           <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -346,13 +347,11 @@ export default function AdminSubscriptionPlansPage() {
               "➕ Qo'shish"
             )}
           </button>
-
-          {(editingPlan) && (
+          
+          {editingPlan && (
             <button
               type="button"
-              onClick={() => {
-                resetForm();
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-sm"
             >
               Bekor qilish
@@ -360,6 +359,7 @@ export default function AdminSubscriptionPlansPage() {
           )}
         </div>
       </form>
+
     </div>
   );
 
