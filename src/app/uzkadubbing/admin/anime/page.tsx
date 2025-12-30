@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Sidebar from "@/src/components/AdminSideber";
+import { Image as ImageIcon } from "lucide-react";
 import { 
   Film, 
   Upload, 
   DollarSign, 
   Plus, 
   Pencil, 
-  X, 
-  Image as ImageIcon,
+  X,
   Link as LinkIcon,
   Hash,
   Eye,
@@ -62,7 +62,7 @@ export default function AdminAnimePage() {
   const [isPaid, setIsPaid] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [Url, setUrl] = useState("");
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
 
   // Slug avtomatik
@@ -380,26 +380,26 @@ export default function AdminAnimePage() {
         {/* Video upload */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
-            <Video size={14} className="inline mr-1" />
-            Anime Rasm (ixtiyoriy)
+            <ImageIcon size={14} className="inline mr-1" />
+            Anime rasmi (ixtiyoriy)
           </label>
 
-          {videoPreview ? (
+          {imagePreview ? (
             <div className="space-y-2">
-              <video
-                src={videoPreview}
-                controls
-                className="w-full rounded-lg border border-gray-600 max-h-48"
+              <img
+                src={imagePreview}
+                alt="Anime preview"
+                className="w-full rounded-lg border border-gray-600 max-h-48 object-cover"
               />
               <button
                 type="button"
                 onClick={() => {
-                  setVideoFile(null);
-                  setVideoPreview(null);
+                  setImageFile(null);
+                  setImagePreview(null);
                 }}
                 className="text-xs text-red-400 hover:underline"
               >
-                ❌ Rasm olib tashlash
+                ❌ Rasmni olib tashlash
               </button>
             </div>
           ) : (
@@ -410,12 +410,13 @@ export default function AdminAnimePage() {
                 onChange={handleUpload}
                 className="hidden"
               />
-              <Video className="mx-auto mb-1 text-gray-400" size={22} />
+              <ImageIcon className="mx-auto mb-1 text-gray-400" size={22} />
               <p className="text-sm text-gray-400">Rasm yuklash</p>
-              <p className="text-xs text-gray-500">MP4, WEBM • max 200MB</p>
+              <p className="text-xs text-gray-500">PNG, JPG, JPEG • max 2MB</p>
             </label>
           )}
         </div>
+
 
             
         {/* ...qolgan form elementlari ... */}
