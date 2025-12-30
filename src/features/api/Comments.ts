@@ -5,30 +5,32 @@ const BASE_URL = "https://uzkadubbing.onrender.com/comments";
 
 // 🇦🇿 Barcha animega oid commentlarni olish
 export const getCommentsByAnimeId = async (
-    animeId: string,
-    token?: string // token optional qilamiz
-  ): Promise<Comment[]> => {
-    try {
-      const res = await fetch(`${BASE_URL}/anime/${animeId}`, {
-        headers: token
-          ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : {},
-      });
-  
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Server javobi:", text);
-        throw new Error("Commentlar olishda xatolik yuz berdi");
-      }
-  
-      const data: Comment[] = await res.json();
-      return data;
-    } catch (error) {
-      console.error("Comments fetch xatosi:", error);
+  animeId: string,
+  episodeId?: string,  // optional
+  token?: string
+): Promise<Comment[]> => {
+  try {
+    const url = new URL(`${BASE_URL}/anime/${animeId}`);
+    if (episodeId) url.searchParams.append("episodeId", episodeId);
+
+    const res = await fetch(url.toString(), {
+      headers: token
+        ? { Authorization: `Bearer ${token}` }
+        : {},
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Server javobi:", text);
       throw new Error("Commentlar olishda xatolik yuz berdi");
     }
+
+    const data: Comment[] = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Comments fetch xatosi:", error);
+    throw new Error("Commentlar olishda xatolik yuz berdi");
+  }
 };  
 // 🇦🇿 Comment yaratish
 export const createComment = async (dto: CreateCommentDto, token: string): Promise<Comment> => {

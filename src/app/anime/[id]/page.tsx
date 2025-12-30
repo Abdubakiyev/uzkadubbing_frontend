@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Calendar, Star, MessageCircle, Play, Share2, Heart, Bookmark, SkipForward, Eye, ChevronRight } from "lucide-react";
 import MainHeader from "@/src/components/MainHeader";
 import { getAnimeById, getAllAnime } from "@/src/features/api/Anime";
-import { getCommentsByAnimeId, createComment } from "@/src/features/api/Comments";
+import { getCommentsByAnimeId, createComment, deleteComment } from "@/src/features/api/Comments";
 import { getAllEpisodes } from "@/src/features/api/Episode";
 import { getAllAdvertisements } from "@/src/features/api/Reklama";
 
@@ -23,6 +23,7 @@ export default function AnimePage() {
   const [showMore, setShowMore] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
+
 
   const [ad, setAd] = useState<{ video?: string; link?: string; text?: string } | null>(null);
   const [showAd, setShowAd] = useState(true);
@@ -89,26 +90,57 @@ export default function AnimePage() {
   // ==========================
   // COMMENT QO'SHISH
   // ==========================
-  const handleAddComment = async () => {
+  const handleAddComment = async (episodeId?: string) => {
     if (!newComment.trim() || !animeData) return;
-
+  
     const token = localStorage.getItem("access_token");
     if (!token) {
       alert("Siz tizimga kirmagansiz!");
       return;
     }
-
+  
     try {
       const dto: CreateCommentDto = {
         animeId: animeData.id,
-        text: newComment,
+        text: newComment.trim(),
+        episodeId, // optional, faqat agar berilsa yuboriladi
       };
+  
       const addedComment = await createComment(dto, token);
-      setComments(prev => [addedComment, ...prev]);
+  
+      // Yangi commentni ro'yxat boshiga qo'shish
+      setComments((prev) => [addedComment, ...prev]);
+  
+      // Inputni tozalash
       setNewComment("");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Comment yaratishda xato:", err);
-      alert("Comment qo'shishda xatolik yuz berdi");
+      alert(err.message || "Comment qo'shishda xatolik yuz berdi");
+    }
+  };
+  
+  const handleDeleteComment = async (
+    commentId: string,
+
+  ) => {
+    if (!confirm("⚠️ Rostdan ham bu commentni o'chirmoqchimisiz?")) return;
+    const token = localStorage.getItem("access_token") || undefined;
+  
+    try {
+      if (!token) throw new Error("Siz tizimga kirishingiz kerak");
+  
+      // Backendga request yuboramiz
+      await deleteComment(commentId, token);
+  
+      // State yangilash: commentni ro'yxatdan olib tashlash
+      setComments((prev) =>
+        prev.filter((comment) => comment.id !== commentId)
+      );
+  
+      alert("✅ Comment o'chirildi!");
+    } catch (err: any) {
+      console.error("Commentni o‘chirish xatosi:", err);
+      alert(err.message || "❌ Commentni o‘chirishda xatolik yuz berdi");
     }
   };
 
@@ -427,7 +459,9 @@ export default function AnimePage() {
           <div className="bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-3 mb-6">
               <MessageCircle size={24} className="text-purple-400" />
-              <h3 className="text-2xl font-bold text-white">Izohlar ({comments.length})</h3>
+              <h3 className="text-2xl font-bold text-white">
+                Izohlar ({comments.length})
+              </h3>
             </div>
 
             {/* Comment Input */}
@@ -439,43 +473,62 @@ export default function AnimePage() {
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Izoh qoldiring..."
                   className="w-full bg-black/50 backdrop-blur-sm border border-white/20 rounded-xl px-5 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors duration-300"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && handleAddComment()
+                  }
                 />
               </div>
               <button
-                onClick={handleAddComment}
+                onClick={() => handleAddComment()}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl px-6 py-3 font-medium transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
                 <MessageCircle size={20} />
                 <span>Yuborish</span>
               </button>
             </div>
-
+                
             {/* Comments List */}
             <div className="space-y-4">
               {comments.map((comment) => (
-                <div key={comment.id} className="group bg-black/30 hover:bg-black/40 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all duration-300">
+                <div
+                  key={comment.id}
+                  className="group bg-black/30 hover:bg-black/40 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all duration-300 relative"
+                >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-full flex items-center justify-center text-xl font-bold text-white border border-white/20">
-                      {comment.user?.username ? comment.user.username[0].toUpperCase() : "U"}
+                      {comment.user?.username
+                        ? comment.user.username[0].toUpperCase()
+                        : "U"}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-bold text-white">{comment.user?.username || "Foydalanuvchi"}</p>
+                        <p className="font-bold text-white">
+                          {comment.user?.username || "Foydalanuvchi"}
+                        </p>
                         <span className="text-xs text-gray-400">
-                          {new Date(comment.createdAt).toLocaleDateString('uz-UZ')}
+                          {new Date(comment.createdAt).toLocaleDateString("uz-UZ")}
                         </span>
                       </div>
                       <p className="text-gray-300">{comment.text}</p>
                     </div>
                   </div>
+                      
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="absolute top-2 right-2 text-red-400 hover:text-red-500 text-sm"
+                  >
+                    ❌
+                  </button>
                 </div>
               ))}
-              
+
               {comments.length === 0 && (
                 <div className="text-center py-10">
                   <MessageCircle size={48} className="text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-500">Hozircha izohlar yo'q. Birinchi bo'lib izoh qoldiring!</p>
+                  <p className="text-gray-500">
+                    Hozircha izohlar yo'q. Birinchi bo'lib izoh qoldiring!
+                  </p>
                 </div>
               )}
             </div>
