@@ -1,6 +1,6 @@
 import { Anime } from "../types/Anime";
 
-const BASE_URL = "https://uzkadubbing.onrender.com/anime";
+const BASE_URL = "https://uzkadubbing-back.onrender.com/anime";
 
 // ----------------------------------------
 // 🇦🇿 Barcha anime olish
