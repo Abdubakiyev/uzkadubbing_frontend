@@ -107,7 +107,7 @@ export default function AdminAnimePage() {
     }
   
     // Faqat video fayl
-    if (!file.type.startsWith("video/")) {
+    if (!file.type.startsWith("image/")) {
       alert("⚠️ Faqat video fayllar qabul qilinadi!");
       return;
     }
@@ -406,7 +406,7 @@ export default function AdminAnimePage() {
             <label className="block border-2 border-dashed border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/30">
               <input
                 type="file"
-                accept="img/*"
+                accept="image/*"
                 onChange={handleUpload}
                 className="hidden"
               />
