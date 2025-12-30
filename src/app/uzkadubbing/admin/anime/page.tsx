@@ -363,7 +363,7 @@ export default function AdminAnimePage() {
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             <Video size={14} className="inline mr-1" />
-            Video URL (ixtiyoriy)
+            telegram URL (ixtiyoriy)
           </label>
           <input
             type="url"
