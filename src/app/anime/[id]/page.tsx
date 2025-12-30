@@ -514,11 +514,19 @@ export default function AnimePage() {
                   </div>
                       
                   {/* Delete Button */}
+                  {/* Delete Button - Variant 1 */}
                   <button
                     onClick={() => handleDeleteComment(comment.id)}
-                    className="absolute top-2 right-2 text-red-400 hover:text-red-500 text-sm"
+                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 p-2 hover:bg-red-500/20 rounded-lg group/delete"
+                    title="O'chirish"
                   >
-                    ❌
+                    <div className="relative w-5 h-5">
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/30 to-red-500/0 rounded-full blur-sm group-hover/delete:blur-md transition-all duration-300" />
+                      <div className="relative w-5 h-5 flex items-center justify-center">
+                        <div className="w-3 h-0.5 bg-red-400 rotate-45 rounded-full group-hover/delete:bg-red-300 group-hover/delete:w-4 transition-all duration-200" />
+                        <div className="w-3 h-0.5 bg-red-400 -rotate-45 rounded-full group-hover/delete:bg-red-300 group-hover/delete:w-4 transition-all duration-200 absolute" />
+                      </div>
+                    </div>
                   </button>
                 </div>
               ))}
