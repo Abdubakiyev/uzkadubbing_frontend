@@ -107,8 +107,8 @@ export default function AdminAnimePage() {
     }
   
     // 2MB limit
-    if (file.size > 2 * 1024 * 1024) {
-      alert("⚠️ Rasm hajmi 2MB dan oshmasligi kerak!");
+    if (file.size > 200 * 1024 * 1024) {
+      alert("⚠️ Rasm hajmi 200MB dan oshmasligi kerak!");
       return;
     }
   
