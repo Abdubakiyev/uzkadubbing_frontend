@@ -100,21 +100,24 @@ export default function AdminAnimePage() {
     const file = e.target.files?.[0];
     if (!file) return;
   
-    // 200MB limit (xohlasang o‘zgartirasan)
-    if (file.size > 200 * 1024 * 1024) {
-      alert("⚠️ Video hajmi 200MB dan oshmasligi kerak!");
-      return;
-    }
-  
-    // Faqat video fayl
+    // faqat rasm
     if (!file.type.startsWith("image/")) {
-      alert("⚠️ Faqat video fayllar qabul qilinadi!");
+      alert("⚠️ Faqat rasm fayllari qabul qilinadi!");
       return;
     }
   
-    setVideoFile(file);
-    setVideoPreview(URL.createObjectURL(file));
-  };
+    // 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
+      alert("⚠️ Rasm hajmi 2MB dan oshmasligi kerak!");
+      return;
+    }
+  
+    setImageFile(file);
+  
+    // ⭐ ASOSIY QATOR — preview uchun
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };  
   
 
   const clearImage = () => {
