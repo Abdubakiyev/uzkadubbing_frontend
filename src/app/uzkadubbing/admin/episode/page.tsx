@@ -79,7 +79,7 @@ export default function AdminEpisodePage() {
     if (!file) return;
 
     // Video validation (50MB max)
-    if (file.size > 50 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024 * 1024) {
       alert("⚠️ Video hajmi 50MB dan oshmasligi kerak!");
       return;
     }

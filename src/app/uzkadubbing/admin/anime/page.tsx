@@ -49,6 +49,9 @@ export default function AdminAnimePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "PAID" | "FREE">("ALL");
   const [showFilters, setShowFilters] = useState(false);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
 
   // 🔹 EDIT STATE
   const [editingAnime, setEditingAnime] = useState<Anime | null>(null);
@@ -96,22 +99,23 @@ export default function AdminAnimePage() {
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Image validation (2MB max)
-    if (file.size > 2 * 1024 * 1024) {
-      alert("⚠️ Rasm hajmi 2MB dan oshmasligi kerak!");
+  
+    // 200MB limit (xohlasang o‘zgartirasan)
+    if (file.size > 200 * 1024 * 1024) {
+      alert("⚠️ Video hajmi 200MB dan oshmasligi kerak!");
       return;
     }
-
-    // Image type validation
-    if (!file.type.startsWith('image/')) {
-      alert("⚠️ Faqat rasm fayllari qabul qilinadi!");
+  
+    // Faqat video fayl
+    if (!file.type.startsWith("video/")) {
+      alert("⚠️ Faqat video fayllar qabul qilinadi!");
       return;
     }
-
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+  
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
   };
+  
 
   const clearImage = () => {
     setImageFile(null);
@@ -373,6 +377,46 @@ export default function AdminAnimePage() {
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
           />
         </div>
+        {/* Video upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            <Video size={14} className="inline mr-1" />
+            Anime Rasm (ixtiyoriy)
+          </label>
+
+          {videoPreview ? (
+            <div className="space-y-2">
+              <video
+                src={videoPreview}
+                controls
+                className="w-full rounded-lg border border-gray-600 max-h-48"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setVideoFile(null);
+                  setVideoPreview(null);
+                }}
+                className="text-xs text-red-400 hover:underline"
+              >
+                ❌ Rasm olib tashlash
+              </button>
+            </div>
+          ) : (
+            <label className="block border-2 border-dashed border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/30">
+              <input
+                type="file"
+                accept="img/*"
+                onChange={handleUpload}
+                className="hidden"
+              />
+              <Video className="mx-auto mb-1 text-gray-400" size={22} />
+              <p className="text-sm text-gray-400">Rasm yuklash</p>
+              <p className="text-xs text-gray-500">MP4, WEBM • max 200MB</p>
+            </label>
+          )}
+        </div>
+
             
         {/* ...qolgan form elementlari ... */}
             

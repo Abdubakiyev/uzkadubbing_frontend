@@ -128,7 +128,7 @@ export default function AdminAdvertisementPage() {
     if (!file) return;
 
     // Video validation (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 500 * 1024 * 1024) {
       alert("⚠️ Video hajmi 10MB dan oshmasligi kerak!");
       return;
     }
