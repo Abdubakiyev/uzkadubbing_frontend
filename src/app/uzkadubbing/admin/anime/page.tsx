@@ -58,7 +58,7 @@ export default function AdminAnimePage() {
   const [slug, setSlug] = useState("");
   const [isPaid, setIsPaid] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [Url, setUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
 
 
@@ -155,7 +155,7 @@ export default function AdminAnimePage() {
         slug: slug.trim(),
         image: imageUrl,
         isPaid,
-        url: videoUrl.trim() || undefined,
+        url: Url.trim() || undefined,
       };
   
       let savedAnime: Anime;
@@ -191,7 +191,7 @@ export default function AdminAnimePage() {
     setTitle(anime.title);
     setSlug(anime.slug);
     setIsPaid(anime.isPaid);
-    setVideoUrl(anime.url || "");
+    setUrl(anime.url || "");
     setImagePreview(anime.image);
     setImageFile(null);
     setActiveTab("form");
@@ -202,7 +202,7 @@ export default function AdminAnimePage() {
     setTitle("");
     setSlug("");
     setIsPaid(false);
-    setVideoUrl("");
+    setUrl("");
     clearImage();
   };
 
@@ -367,8 +367,8 @@ export default function AdminAnimePage() {
           </label>
           <input
             type="url"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
+            value={Url}
+            onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com/video.mp4"
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
           />
