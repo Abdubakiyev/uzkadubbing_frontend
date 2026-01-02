@@ -1,6 +1,6 @@
 import { SubscriptionPlan } from "../types/Subscription-plan";
 
-const BASE_URL = "https://uzkadubbing.onrender.com/subscription-plans";
+const BASE_URL = "https://uzkadubbingbackend-uzka.up.railway.app/subscription-plans";
 
 // 🇦🇿 Token olish helper
 const getToken = () => localStorage.getItem("access_token");

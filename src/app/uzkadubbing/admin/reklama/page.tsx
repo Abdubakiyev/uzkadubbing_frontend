@@ -162,9 +162,7 @@ export default function AdminAdvertisementPage() {
   };
 
   // create + update
-  const createAd = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
+  const createAd = async () => {  
     // Validation
     if (!selectedEpisodeId) {
       return alert("⚠️ Iltimos, episode tanlang!");
@@ -327,7 +325,7 @@ export default function AdminAdvertisementPage() {
         )}
       </div>
 
-      <form onSubmit={createAd} className="space-y-4">
+      <div className="space-y-4">
         {/* Matn */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -366,11 +364,12 @@ export default function AdminAdvertisementPage() {
             className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
             value={selectedAnimeId}
             onChange={(e) => setSelectedAnimeId(e.target.value)}
-            required
           >
             <option value="">-- Anime tanlang --</option>
-            {animes.map(a => (
-              <option key={a.id} value={a.id}>{a.title}</option>
+            {animes.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.title}
+              </option>
             ))}
           </select>
         </div>
@@ -385,12 +384,13 @@ export default function AdminAdvertisementPage() {
             className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
             value={selectedEpisodeId}
             onChange={(e) => setSelectedEpisodeId(e.target.value)}
-            required
             disabled={!selectedAnimeId}
           >
             <option value="">-- Episode tanlang --</option>
-            {episodes.map(ep => (
-              <option key={ep.id} value={ep.id}>{ep.title}</option>
+            {episodes.map((ep) => (
+              <option key={ep.id} value={ep.id}>
+                {ep.title}
+              </option>
             ))}
           </select>
         </div>
@@ -434,7 +434,9 @@ export default function AdminAdvertisementPage() {
                 </div>
                 <div>
                   <p className="text-gray-300 text-sm font-medium">Video yuklash</p>
-                  <p className="text-xs text-gray-400">MP4, WebM, MOV • maks. 10MB</p>
+                  <p className="text-xs text-gray-400">
+                    MP4, WebM, MOV • maks. 10MB
+                  </p>
                 </div>
               </div>
             </label>
@@ -467,7 +469,8 @@ export default function AdminAdvertisementPage() {
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
-            type="submit"
+            type="button"
+            onClick={createAd}
             disabled={isSubmitting}
             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
           >
@@ -493,7 +496,7 @@ export default function AdminAdvertisementPage() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
     </div>
   );

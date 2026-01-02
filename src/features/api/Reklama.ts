@@ -1,6 +1,6 @@
 import { Advertisement, CreateAdvertisementDto, UpdateAdvertisementDto } from "../types/Reklama";
 
-const API_BASE = "https://uzkadubbing.onrender.com/advertisements";
+const API_BASE = "https://uzkadubbingbackend-uzka.up.railway.app/advertisements";
 
 // =================== TYPES ===================
 

@@ -1,6 +1,6 @@
 import { Episode } from "../types/Episode";
 
-const BASE_URL = "https://uzkadubbing.onrender.com/episodes";
+const BASE_URL = "https://uzkadubbingbackend-uzka.up.railway.app/episodes";
 
 // 🇦🇿 Token olish helper
 const getToken = () => localStorage.getItem("access_token");

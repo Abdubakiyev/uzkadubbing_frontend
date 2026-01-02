@@ -101,8 +101,7 @@ export default function AdminUsersPage() {
   };
 
   // CREATE or UPDATE USER
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
   
     // Validation
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
@@ -288,7 +287,7 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-4">
         {/* Email */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -301,10 +300,9 @@ export default function AdminUsersPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="foydalanuvchi@email.com"
-            required
           />
         </div>
-
+              
         {/* Username */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
@@ -317,7 +315,6 @@ export default function AdminUsersPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="username"
-            required
           />
         </div>
 
@@ -335,7 +332,6 @@ export default function AdminUsersPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Kuchli parol kiriting"
-                required
               />
               <button
                 type="button"
@@ -386,7 +382,6 @@ export default function AdminUsersPage() {
             <Upload size={16} />
             Profil rasmi
           </label>
-            
           {avatarPreview ? (
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
@@ -422,7 +417,8 @@ export default function AdminUsersPage() {
         
         {/* Submit Button */}
         <button
-          type="submit"
+          type="button"
+          onClick={handleSubmit}
           disabled={isSubmitting}
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
@@ -446,7 +442,7 @@ export default function AdminUsersPage() {
         >
           Bekor qilish
         </button>
-      </form>
+      </div>
 
     </div>
   );

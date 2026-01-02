@@ -127,14 +127,14 @@ export default function AdminAnimePage() {
   };
 
   // 🔹 CREATE / UPDATE
-  const saveAnime = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
+  const saveAnime = async () => {
     // Validation
     if (!title.trim()) return alert("⚠️ Anime nomini kiriting!");
     if (!slug.trim()) return alert("⚠️ Slug kiriting!");
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-      return alert("⚠️ Slug faqat kichik harflar, raqamlar va tire (-) dan iborat bo'lishi kerak!");
+      return alert(
+        "⚠️ Slug faqat kichik harflar, raqamlar va tire (-) dan iborat bo'lishi kerak!"
+      );
     }
   
     setIsSubmitting(true);
@@ -144,9 +144,8 @@ export default function AdminAnimePage() {
       let imageUrl = editingAnime?.image || "";
   
       if (imageFile) {
-        // Upload progress simulation
         const progressInterval = setInterval(() => {
-          setUploadProgress(prev => Math.min(prev + 10, 90));
+          setUploadProgress((prev) => Math.min(prev + 10, 90));
         }, 100);
   
         try {
@@ -170,20 +169,18 @@ export default function AdminAnimePage() {
       if (editingAnime) {
         // ✏️ UPDATE
         savedAnime = await updateAnimeApi(editingAnime.id, dto);
-        setAnimeList(prev =>
-          prev.map(a => (a.id === savedAnime.id ? savedAnime : a))
+        setAnimeList((prev) =>
+          prev.map((a) => (a.id === savedAnime.id ? savedAnime : a))
         );
         alert("✅ Anime yangilandi!");
       } else {
         // ➕ CREATE
         savedAnime = await createAnimeApi(dto);
-        setAnimeList(prev => [savedAnime, ...prev]);
+        setAnimeList((prev) => [savedAnime, ...prev]);
         alert("✅ Anime qo'shildi!");
       }
   
       resetForm();
-      setUploadProgress(0);
-  
     } catch (err: any) {
       console.error("Saqlash xatosi:", err);
       alert(err?.message || "❌ Xatolik yuz berdi!");
@@ -191,7 +188,7 @@ export default function AdminAnimePage() {
       setIsSubmitting(false);
       setUploadProgress(0);
     }
-  };  
+  };    
 
   const startEdit = (anime: Anime) => {
     setEditingAnime(anime);
@@ -308,10 +305,7 @@ export default function AdminAnimePage() {
         )}
       </div>
 
-      <form
-        onSubmit={saveAnime}
-        className="space-y-4"
-      >
+      <div className="space-y-4">
         {/* Anime nomi */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -324,10 +318,9 @@ export default function AdminAnimePage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Masalan: Naruto Shippuden"
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           />
         </div>
-            
+
         {/* Slug */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -341,7 +334,6 @@ export default function AdminAnimePage() {
               onChange={(e) => setSlug(e.target.value)}
               placeholder="naruto-shippuden"
               className="flex-1 px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-              required
             />
             <button
               type="button"
@@ -366,11 +358,11 @@ export default function AdminAnimePage() {
           </p>
         </div>
             
-        {/* Video URL */}
+        {/* Telegram URL */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             <Video size={14} className="inline mr-1" />
-            telegram URL (ixtiyoriy)
+            Telegram URL (ixtiyoriy)
           </label>
           <input
             type="url"
@@ -380,13 +372,14 @@ export default function AdminAnimePage() {
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
           />
         </div>
-        {/* Video upload */}
+            
+        {/* Image upload */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             <ImageIcon size={14} className="inline mr-1" />
             Anime rasmi (ixtiyoriy)
           </label>
-
+            
           {imagePreview ? (
             <div className="space-y-2">
               <img
@@ -419,19 +412,18 @@ export default function AdminAnimePage() {
             </label>
           )}
         </div>
-
-
-            
-        {/* ...qolgan form elementlari ... */}
-            
+        
+        {/* Buttons */}
         <div className="flex gap-2 pt-2">
           <button
-            type="submit"
+            type="button"
+            onClick={saveAnime}
             disabled={isSubmitting}
-            className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
+            className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 flex items-center justify-center gap-1 text-sm"
           >
             {isSubmitting ? "Saqlanmoqda..." : editingAnime ? "💾 Yangilash" : "➕ Qo'shish"}
           </button>
+        
           {editingAnime && (
             <button
               type="button"
@@ -442,7 +434,7 @@ export default function AdminAnimePage() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
     </div>
   );

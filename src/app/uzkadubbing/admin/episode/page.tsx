@@ -101,22 +101,23 @@ export default function AdminEpisodePage() {
   };
 
   // 🔹 CREATE / UPDATE
-  const saveEpisode = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
+  const saveEpisode = async () => {
     // 🔹 Validation
     if (!title.trim()) {
       alert("⚠️ Episode nomini kiriting!");
       return;
     }
+  
     if (!episodeNumber || episodeNumber < 1) {
       alert("⚠️ To'g'ri episode raqamini kiriting!");
       return;
     }
+  
     if (!animeId) {
       alert("⚠️ Anime tanlang!");
       return;
     }
+  
     if (!videoFile && !editingEpisode) {
       alert("⚠️ Video faylni tanlang!");
       return;
@@ -152,14 +153,14 @@ export default function AdminEpisodePage() {
       let savedEpisode: Episode;
   
       if (editingEpisode) {
-        // 🔹 Update
+        // ✏️ UPDATE
         savedEpisode = await updateEpisodeApi(editingEpisode.id, dto);
         setEpisodes((prev) =>
-          prev.map((e) => (e.id === savedEpisode.id ? savedEpisode : e))
+          prev.map((ep) => (ep.id === savedEpisode.id ? savedEpisode : ep))
         );
         alert("✅ Episode yangilandi!");
       } else {
-        // 🔹 Create
+        // ➕ CREATE
         savedEpisode = await createEpisodeApi(dto);
         setEpisodes((prev) => [savedEpisode, ...prev]);
         alert("✅ Episode qo'shildi!");
@@ -167,14 +168,13 @@ export default function AdminEpisodePage() {
   
       resetForm();
       setUploadProgress(0);
-  
     } catch (err: any) {
       console.error("Episode saqlash xatosi:", err);
-      alert(err.message || "❌ Xatolik yuz berdi!");
+      alert(err?.message || "❌ Xatolik yuz berdi!");
     } finally {
       setIsSubmitting(false);
     }
-  };  
+  };    
 
   const startEdit = (episode: Episode) => {
     setEditingEpisode(episode);
@@ -295,10 +295,7 @@ export default function AdminEpisodePage() {
         )}
       </div>
 
-      <form
-        onSubmit={saveEpisode}
-        className="space-y-4"
-      >
+      <div className="space-y-4">
         {/* Episode nomi */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -310,25 +307,28 @@ export default function AdminEpisodePage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           />
         </div>
-            
+
         {/* Episode raqami */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Episode raqami
           </label>
           <div className="relative">
-            <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+            <Hash
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={14}
+            />
             <input
               type="number"
-              value={episodeNumber}
-              onChange={(e) => setEpisodeNumber(e.target.value ? Number(e.target.value) : "")}
               min={1}
+              value={episodeNumber}
+              onChange={(e) =>
+                setEpisodeNumber(e.target.value ? Number(e.target.value) : "")
+              }
               className="w-full pl-9 pr-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
               placeholder="1"
-              required
             />
           </div>
         </div>
@@ -342,7 +342,6 @@ export default function AdminEpisodePage() {
             value={animeId}
             onChange={(e) => setAnimeId(e.target.value)}
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           >
             <option value="">Anime tanlang</option>
             {animeList.map((anime) => (
@@ -391,12 +390,14 @@ export default function AdminEpisodePage() {
                 </div>
                 <div>
                   <p className="text-gray-300 text-sm font-medium">Video yuklash</p>
-                  <p className="text-xs text-gray-400">MP4, WebM, MOV • maks. 50MB</p>
+                  <p className="text-xs text-gray-400">
+                    MP4, WebM, MOV • maks. 50MB
+                  </p>
                 </div>
               </div>
             </label>
           )}
-      
+
           {/* Upload progress */}
           {uploadProgress > 0 && (
             <div className="mt-2">
@@ -418,17 +419,19 @@ export default function AdminEpisodePage() {
         {animeId && (
           <div className="p-2 bg-gray-700/30 rounded-lg">
             <p className="text-xs text-gray-300">
-              Tanlangan anime: <span className="font-medium">{getAnimeTitle(animeId)}</span>
+              Tanlangan anime:{" "}
+              <span className="font-medium">{getAnimeTitle(animeId)}</span>
             </p>
           </div>
         )}
-      
+
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
-            type="submit"
+            type="button"
+            onClick={saveEpisode}
             disabled={isSubmitting}
-            className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
+            className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 flex items-center justify-center gap-1 text-sm"
           >
             {isSubmitting ? (
               <>
@@ -452,7 +455,7 @@ export default function AdminEpisodePage() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
     </div>
   );

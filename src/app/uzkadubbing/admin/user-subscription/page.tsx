@@ -96,8 +96,7 @@ export default function UserSubscriptionAdminPage() {
   };
 
   /* ================= CREATE / UPDATE ================= */
-  const handleSaveSubscription = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveSubscription = async () => {
   
     // Validation
     if (!userId || !planId) {
@@ -263,15 +262,16 @@ export default function UserSubscriptionAdminPage() {
         )}
       </div>
 
-      <form onSubmit={handleSaveSubscription} className="space-y-4">
+      <div className="space-y-4">
         {/* Foydalanuvchi tanlash */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Foydalanuvchi tanlash</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Foydalanuvchi tanlash
+          </label>
           <select
             className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
-            required
             disabled={!!editingSubscription}
           >
             <option value="">Foydalanuvchi tanlang...</option>
@@ -290,12 +290,13 @@ export default function UserSubscriptionAdminPage() {
         
         {/* Reja tanlash */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Obuna rejasi</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Obuna rejasi
+          </label>
           <select
             className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
             value={planId}
             onChange={(e) => setPlanId(e.target.value)}
-            required
           >
             <option value="">Reja tanlang...</option>
             {plans.map((plan) => (
@@ -325,7 +326,8 @@ export default function UserSubscriptionAdminPage() {
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
-            type="submit"
+            type="button"
+            onClick={handleSaveSubscription}
             disabled={isSubmitting}
             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
           >
@@ -351,7 +353,7 @@ export default function UserSubscriptionAdminPage() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
     </div>
   );

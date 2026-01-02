@@ -88,8 +88,7 @@ export default function AdminSubscriptionPlansPage() {
   };
 
   /* ================= SAVE (CREATE / UPDATE) ================= */
-  const savePlan = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const savePlan = async () => {
   
     // Validation
     if (!name.trim()) {
@@ -243,54 +242,65 @@ export default function AdminSubscriptionPlansPage() {
         )}
       </div>
 
-      <form onSubmit={savePlan} className="space-y-4">
+      <div className="space-y-4">
         {/* Reja nomi */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Reja nomi</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Reja nomi
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Masalan: Premium reja"
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           />
         </div>
 
         {/* Narx */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Narx (so'm)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Narx (so'm)
+          </label>
           <input
             type="number"
-            value={price}
             min={0}
             step={1000}
-            onChange={(e) => setPrice(e.target.value ? Number(e.target.value) : "")}
+            value={price}
+            onChange={(e) =>
+              setPrice(e.target.value ? Number(e.target.value) : "")
+            }
             placeholder="Masalan: 50000"
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           />
         </div>
-
+          
         {/* Muddat */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Muddat (kun)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Muddat (kun)
+          </label>
           <input
             type="number"
-            value={duration}
             min={1}
-            onChange={(e) => setDuration(e.target.value ? Number(e.target.value) : "")}
+            value={duration}
+            onChange={(e) =>
+              setDuration(e.target.value ? Number(e.target.value) : "")
+            }
             placeholder="Masalan: 30"
             className="w-full px-3 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-            required
           />
         </div>
-
+          
         {/* Status */}
         <div className="p-3 bg-gray-700/30 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={`p-1 rounded ${isActive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+              <div
+                className={`p-1 rounded ${
+                  isActive ? "bg-green-500/20" : "bg-red-500/20"
+                }`}
+              >
                 {isActive ? (
                   <Check className="text-green-400" size={16} />
                 ) : (
@@ -304,16 +314,17 @@ export default function AdminSubscriptionPlansPage() {
                 </p>
               </div>
             </div>
+              
             <button
               type="button"
               onClick={() => setIsActive(!isActive)}
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                isActive ? 'bg-green-500' : 'bg-gray-600'
+                isActive ? "bg-green-500" : "bg-gray-600"
               }`}
             >
               <span
                 className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                  isActive ? 'translate-x-5' : 'translate-x-1'
+                  isActive ? "translate-x-5" : "translate-x-1"
                 }`}
               />
             </button>
@@ -324,7 +335,10 @@ export default function AdminSubscriptionPlansPage() {
         {price && duration && (
           <div className="p-2 bg-blue-500/10 rounded-lg">
             <p className="text-xs text-gray-300 text-center">
-              Kunlik: {formatPrice(Math.round(Number(price) / Number(duration)))}
+              Kunlik:{" "}
+              {formatPrice(
+                Math.round(Number(price) / Number(duration))
+              )}
             </p>
           </div>
         )}
@@ -332,7 +346,8 @@ export default function AdminSubscriptionPlansPage() {
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <button
-            type="submit"
+            type="button"
+            onClick={savePlan}
             disabled={isSubmitting}
             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
           >
@@ -358,7 +373,7 @@ export default function AdminSubscriptionPlansPage() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
     </div>
   );
