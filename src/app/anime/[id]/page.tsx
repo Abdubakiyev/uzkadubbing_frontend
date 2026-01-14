@@ -52,6 +52,8 @@ export default function AnimePage() {
 
         const anime = await getAnimeById(animeId);
         setAnimeData(anime);
+        console.log(anime);
+        
 
         const eps = await getAllEpisodes(anime.id);
         setEpisodes(eps);
